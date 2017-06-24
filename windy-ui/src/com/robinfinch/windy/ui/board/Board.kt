@@ -1,4 +1,4 @@
-package com.robinfinch.windy.ui
+package com.robinfinch.windy.ui.board
 
 import com.robinfinch.windy.core.position.Generator
 import com.robinfinch.windy.core.position.Move
@@ -29,7 +29,7 @@ class Board : JPanel() {
     var style = Style()
         set(style) {
             field = style
-            preferredSize = Dimension(10 * style.squareSize, 10 * style.squareSize)
+            minimumSize = Dimension(10 * style.squareSize, 10 * style.squareSize)
             repaint()
         }
 
@@ -47,11 +47,11 @@ class Board : JPanel() {
         }
 
     interface Listener {
-        fun onMoveEntered(moves: List<Move>)
+        fun onMoveEntered(moves: List<Move>): Boolean
     }
 
     var listener = object : Listener {
-        override fun onMoveEntered(moves: List<Move>) {}
+        override fun onMoveEntered(moves: List<Move>) = false
     }
 
     private class MouseHandler(private val board: Board) : MouseListener, MouseMotionListener {
@@ -59,13 +59,10 @@ class Board : JPanel() {
         var validMoves: List<Move> = emptyList()
 
         var moveX: Int = -1
-            private set
 
         var moveY: Int = -1
-            private set
 
         var moveStart: Int? = null
-            private set
 
         val moveSteps = Stack<Int>()
 
@@ -122,9 +119,8 @@ class Board : JPanel() {
 
             if (validMoves.any { it.start == square }) {
                 moveStart = square
+                board.repaint()
             }
-
-            board.repaint()
         }
 
         private fun continueMove() {
@@ -132,7 +128,7 @@ class Board : JPanel() {
 
             moveSteps.push(square)
 
-            if (!validMoves.any { (it.start == moveStart) and (it.steps startsWith moveSteps) }) {
+            if (!validMoves.any { (it.start == moveStart) && (it.steps startsWith moveSteps) }) {
                 moveSteps.pop()
             }
 
@@ -143,13 +139,15 @@ class Board : JPanel() {
             val moveEnd = board.squareNumberForCoordinates(moveX, moveY)
 
             val moves = validMoves.filter {
-                (it.start == moveStart) and (it.steps startsWith moveSteps) and (it.end == moveEnd)
+                (it.start == moveStart) && (it.steps startsWith moveSteps) && (it.end == moveEnd)
             }
 
             moveSteps.clear()
             moveStart = null
 
-            board.onMoveEntered(moves)
+            if (moves.isEmpty() || !board.onMoveEntered(moves)) {
+                board.repaint()
+            }
         }
     }
 
@@ -162,8 +160,8 @@ class Board : JPanel() {
         addMouseMotionListener(handler)
     }
 
-    private fun onMoveEntered(moves: List<Move>) {
-        listener.onMoveEntered(moves)
+    private fun onMoveEntered(moves: List<Move>): Boolean {
+        return listener.onMoveEntered(moves)
     }
 
     override fun paintComponent(pad: Graphics) {

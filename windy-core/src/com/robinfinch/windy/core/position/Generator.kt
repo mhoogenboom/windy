@@ -80,7 +80,7 @@ class Generator(val position: Position) {
                                    backwardRight: IntArray, backwardLeft: IntArray) {
 
         for (square in squares) {
-            if ((position.empty[square] == position.empty[0]) and (position.white[square] == position.white[0])) {
+            if ((position.empty[square] == position.empty[0]) && (position.white[square] == position.white[0])) {
                 start = square
                 if (position.king[square]) {
                     generateForKing(forwardLeft, forwardRight, backwardRight, backwardLeft)
@@ -109,12 +109,12 @@ class Generator(val position: Position) {
         }
 
         end = backwardRight[start]
-        if (!position.empty[end] and (position.white[end] != position.white[0])) {
+        if (!position.empty[end] && (position.white[end] != position.white[0])) {
             generateHitForMan(backwardRight, forwardRight, backwardLeft, forwardLeft)
         }
 
         end = backwardLeft[start]
-        if (!position.empty[end] and (position.white[end] != position.white[0])) {
+        if (!position.empty[end] && (position.white[end] != position.white[0])) {
             generateHitForMan(backwardLeft, backwardRight, forwardLeft, forwardRight)
         }
     }
@@ -129,17 +129,17 @@ class Generator(val position: Position) {
             position.white[end] = !position.white[end]
 
             end = left[s]
-            if (!position.empty[end] and (position.white[end] != position.white[0])) {
+            if (!position.empty[end] && (position.white[end] != position.white[0])) {
                 generateHitForMan(left, backward, forward, right)
             }
 
             end = forward[s]
-            if (!position.empty[end] and (position.white[end] != position.white[0])) {
+            if (!position.empty[end] && (position.white[end] != position.white[0])) {
                 generateHitForMan(forward, left, right, backward)
             }
 
             end = right[s]
-            if (!position.empty[end] and (position.white[end] != position.white[0])) {
+            if (!position.empty[end] && (position.white[end] != position.white[0])) {
                 generateHitForMan(right, forward, backward, left)
             }
 

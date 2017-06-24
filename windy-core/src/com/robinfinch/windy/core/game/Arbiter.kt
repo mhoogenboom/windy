@@ -2,22 +2,57 @@ package com.robinfinch.windy.core.game
 
 class Arbiter {
 
-    private val game = Game()
-
-    private var state = State.WAITING
-
-    fun setWhite(name: String) {
-        game.white = name
+    private enum class State {
+        SETTING_UP, IN_PROGRESS, DRAW_PROPOSED, FINISHED
     }
+
+    private var state = State.FINISHED
+
+    private lateinit var game: Game
+
+    fun setupGame(): Boolean {
+        if (state == State.FINISHED) {
+            game = Game()
+            game.start()
+            state = State.SETTING_UP
+            return true
+        } else {
+            return false
+        }
+    }
+
+    var white
+        get() = game.white
+        set(name) {
+            if (state == State.SETTING_UP) {
+                game.white = name
+            }
+        }
+
+    var black
+        get() = game.black
+        set(name) {
+            if (state == State.SETTING_UP) {
+                game.black = name
+            }
+        }
+
+    val position
+        get() = game.position()
+
+    val drawProposed
+        get() = (state == State.DRAW_PROPOSED)
+
+    val result
+        get() = game.result
 
     fun acceptWhite(action: GameAction): Boolean {
 
-        if (state == State.WAITING) {
-            game.start()
+        if (state == State.SETTING_UP) {
             state = State.IN_PROGRESS
         }
 
-        if ((state == State.IN_PROGRESS) or (state == State.DRAW_PROPOSED)) {
+        if ((state == State.IN_PROGRESS) || (state == State.DRAW_PROPOSED)) {
             if (!game.whitesTurn()) {
                 return false
             }
@@ -45,13 +80,9 @@ class Arbiter {
         return false
     }
 
-    fun setBlack(name: String) {
-        game.black = name
-    }
-
     fun acceptBlack(action: GameAction): Boolean {
 
-        if ((state == State.IN_PROGRESS) or (state == State.DRAW_PROPOSED)) {
+        if ((state == State.IN_PROGRESS) || (state == State.DRAW_PROPOSED)) {
             if (game.whitesTurn()) {
                 return false
             }
@@ -91,9 +122,5 @@ class Arbiter {
     private fun finish(result: Game.Result) {
         game.result = result
         state = State.FINISHED
-    }
-
-    private enum class State {
-        WAITING, IN_PROGRESS, DRAW_PROPOSED, FINISHED
     }
 }
