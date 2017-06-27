@@ -8,11 +8,12 @@ import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.ui.board.Board
 import com.robinfinch.windy.ui.controller.View
 import com.robinfinch.windy.ui.controller.WindyController
-import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets
+import java.io.File
 import javax.swing.*
+import javax.swing.filechooser.FileFilter
 
 fun main(args: Array<String>) {
 
@@ -122,4 +123,28 @@ class WindyApp : View, GameDetailsDialog.Listener, Board.Listener {
     override fun showMessage(message: String) {
         JOptionPane.showMessageDialog(frame, message)
     }
+
+    override fun showSaveDialog(): File? {
+        val fileChooser = JFileChooser()
+
+        fileChooser.fileFilter = object : FileFilter() {
+
+            override fun accept(f: File): Boolean {
+                return f.name.endsWith(".pdn")
+            }
+
+            override fun getDescription(): String? {
+                return "PDN file"
+            }
+        }
+
+        val option = fileChooser.showSaveDialog(frame)
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.selectedFile
+        } else {
+            return null
+        }
+    }
+
 }

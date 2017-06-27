@@ -1,6 +1,7 @@
 package com.robinfinch.windy.ui.controller
 
 import com.robinfinch.windy.core.position.Position
+import java.io.File
 
 interface View {
 
@@ -11,4 +12,6 @@ interface View {
     fun setBoard(position: Position, upsideDown: Boolean)
 
     fun showMessage(message: String)
+
+    fun showSaveDialog(): File?
 }

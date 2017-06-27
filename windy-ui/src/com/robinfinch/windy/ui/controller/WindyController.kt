@@ -1,10 +1,8 @@
 package com.robinfinch.windy.ui.controller
 
 import com.robinfinch.windy.core.game.Arbiter
-import com.robinfinch.windy.core.game.ExecuteMove
 import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.game.GameAction
-import com.robinfinch.windy.core.position.Move
 
 class WindyController(private val view: View) {
 
@@ -61,11 +59,30 @@ class WindyController(private val view: View) {
                 view.showMessage("The board is yours, ${player}")
             }
 
-            Game.Result.WHITE_WIN -> view.showMessage("Congratulations ${arbiter.white} with your win")
+            Game.Result.WHITE_WIN -> {
+                view.showMessage("Congratulations ${arbiter.white} with your win")
+                saveGame()
+            }
 
-            Game.Result.BLACK_WIN -> view.showMessage("Congratulations ${arbiter.black} with your win")
+            Game.Result.BLACK_WIN -> {
+                view.showMessage("Congratulations ${arbiter.black} with your win")
+                saveGame()
+            }
 
-            Game.Result.DRAW -> view.showMessage("It's a draw!")
+            Game.Result.DRAW -> {
+                view.showMessage("It's a draw!")
+                saveGame()
+            }
         }
+    }
+
+    private fun saveGame() {
+
+        val file = view.showSaveDialog()
+        if (file != null) {
+            arbiter.writeGame(file)
+        }
+
+        onStart()
     }
 }
