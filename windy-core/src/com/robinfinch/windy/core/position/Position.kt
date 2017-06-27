@@ -10,6 +10,26 @@ class Position() {
     val white = Array<Boolean>(1 + NUMBER_OF_SQUARES, { it == 0 })
     val king = Array<Boolean>(1 + NUMBER_OF_SQUARES, { false })
 
+    fun start() {
+        for (square in 1..20) {
+            empty[square] = false
+            white[square] = false
+            king[square] = false
+        }
+
+        for (square in 21..30) {
+            empty[square] = true
+        }
+
+        for (square in 31..50) {
+            empty[square] = false
+            white[square] = true
+            king[square] = false
+        }
+    }
+
+    fun validMoves() = Generator(this).generate()
+
     fun execute(move: Move) {
         empty[move.start] = true
 

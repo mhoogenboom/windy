@@ -1,5 +1,7 @@
 package com.robinfinch.windy.core.game
 
+import com.robinfinch.windy.core.position.Position
+
 class Arbiter {
 
     private enum class State {
@@ -10,10 +12,13 @@ class Arbiter {
 
     private lateinit var game: Game
 
+    private lateinit var position: Position
+
     fun setupGame(): Boolean {
         if (state == State.FINISHED) {
+            position = Position()
+            position.start()
             game = Game()
-            game.start()
             state = State.SETTING_UP
             return true
         } else {
@@ -37,8 +42,8 @@ class Arbiter {
             }
         }
 
-    val position
-        get() = game.position()
+    val currentPosition
+        get() = position.copy()
 
     val drawProposed
         get() = (state == State.DRAW_PROPOSED)
@@ -53,12 +58,12 @@ class Arbiter {
         }
 
         if ((state == State.IN_PROGRESS) || (state == State.DRAW_PROPOSED)) {
-            if (!game.whitesTurn()) {
+            if (!position.white[0]) {
                 return false
             }
             when (action) {
                 is ExecuteMove -> {
-                    if (action.move in game.validMoves()) {
+                    if (action.move in position.validMoves()) {
                         execute(action)
                         return true
                     }
@@ -83,12 +88,12 @@ class Arbiter {
     fun acceptBlack(action: GameAction): Boolean {
 
         if ((state == State.IN_PROGRESS) || (state == State.DRAW_PROPOSED)) {
-            if (game.whitesTurn()) {
+            if (position.white[0]) {
                 return false
             }
             when (action) {
                 is ExecuteMove -> {
-                    if (action.move in game.validMoves()) {
+                    if (action.move in position.validMoves()) {
                         execute(action)
                         return true
                     }
@@ -111,6 +116,7 @@ class Arbiter {
     }
 
     private fun execute(action: ExecuteMove) {
+        position.execute(action.move)
         game.execute(action.move)
         state = if (action.proposesDraw) {
             State.DRAW_PROPOSED

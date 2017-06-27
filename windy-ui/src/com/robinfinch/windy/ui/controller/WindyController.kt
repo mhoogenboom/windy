@@ -54,7 +54,7 @@ class WindyController(private val view: View) {
             Game.Result.UNKNOWN -> {
                 view.enableAcceptDraw(arbiter.drawProposed)
 
-                view.setBoard(arbiter.position, !whiteHasTheBoard)
+                view.setBoard(arbiter.currentPosition, !whiteHasTheBoard)
 
                 val player = if (whiteHasTheBoard) arbiter.white else arbiter.black
 
