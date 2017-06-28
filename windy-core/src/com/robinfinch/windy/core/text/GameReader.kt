@@ -94,6 +94,7 @@ class GameReader {
                     }
 
                     if (moves.size == 1) {
+                        position.execute(moves[0])
                         game.execute(moves[0])
                     }
                 }
@@ -105,6 +106,7 @@ class GameReader {
                     }
 
                     if (hits.size == 1) {
+                        position.execute(hits[0])
                         game.execute(hits[0])
                     }
                 }

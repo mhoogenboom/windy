@@ -47,8 +47,8 @@ class Arbiter {
     val currentPosition
         get() = position.copy()
 
-    val currentHistory
-        get() = game.history()
+    val history
+        get() = game.moves()
 
     val drawProposed
         get() = (state == State.DRAW_PROPOSED)
@@ -56,7 +56,7 @@ class Arbiter {
     val result
         get() = game.result
 
-    fun acceptWhite(action: GameAction): Boolean {
+    fun acceptWhite(action: Action): Boolean {
 
         if (state == State.SETTING_UP) {
             state = State.IN_PROGRESS
@@ -90,7 +90,7 @@ class Arbiter {
         return false
     }
 
-    fun acceptBlack(action: GameAction): Boolean {
+    fun acceptBlack(action: Action): Boolean {
 
         if ((state == State.IN_PROGRESS) || (state == State.DRAW_PROPOSED)) {
             if (position.white[0]) {

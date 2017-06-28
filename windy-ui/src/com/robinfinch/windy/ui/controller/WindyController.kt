@@ -1,9 +1,10 @@
 package com.robinfinch.windy.ui.controller
 
+import com.robinfinch.windy.core.game.Action
 import com.robinfinch.windy.core.game.Arbiter
 import com.robinfinch.windy.core.game.Game
-import com.robinfinch.windy.core.game.GameAction
 import com.robinfinch.windy.core.text.format
+import com.robinfinch.windy.ui.getStrng
 import java.io.BufferedWriter
 import java.io.StringWriter
 import java.util.*
@@ -20,6 +21,8 @@ class WindyController(private val view: View, private val texts: ResourceBundle)
         view.setTitle(texts.getString("app.setting_up"))
         view.setBoard(arbiter.currentPosition, false)
         view.setHistory("")
+        view.enableMovesOnBoard(this::onActionEntered)
+        view.enableResign(this::onActionEntered)
 
         view.enterGameDetails()
     }
@@ -34,7 +37,7 @@ class WindyController(private val view: View, private val texts: ResourceBundle)
         play()
     }
 
-    fun onActionEntered(action: GameAction): Boolean {
+    fun onActionEntered(action: Action): Boolean {
 
         if (whiteHasTheBoard) {
             if (arbiter.acceptWhite(action)) {
@@ -61,34 +64,37 @@ class WindyController(private val view: View, private val texts: ResourceBundle)
 
             Game.Result.UNKNOWN -> {
                 val history = StringWriter()
-                BufferedWriter(history).use { out -> arbiter.currentHistory.format(out) }
+                BufferedWriter(history).use { out -> arbiter.history.format(out) }
 
                 view.setBoard(arbiter.currentPosition, !whiteHasTheBoard)
                 view.setHistory(history.toString())
-                view.enableAcceptDraw(arbiter.drawProposed)
+                view.enableAcceptDraw(if (arbiter.drawProposed) this::onActionEntered else null)
 
                 val player = if (whiteHasTheBoard) arbiter.white else arbiter.black
-                view.showMessage("The board is yours, ${player}")
+                view.showMessage(texts.getStrng("play.has_the_board", player))
             }
 
             Game.Result.WHITE_WIN -> {
-                view.showMessage("Congratulations ${arbiter.white} with your win")
+                view.showMessage(texts.getStrng("play.win", arbiter.white))
                 saveGame()
             }
 
             Game.Result.BLACK_WIN -> {
-                view.showMessage("Congratulations ${arbiter.black} with your win")
+                view.showMessage(texts.getStrng("play.win", arbiter.black))
                 saveGame()
             }
 
             Game.Result.DRAW -> {
-                view.showMessage("It's a draw!")
+                view.showMessage(texts.getString("play.draw"))
                 saveGame()
             }
         }
     }
 
     private fun saveGame() {
+
+        view.enableAcceptDraw(null)
+        view.enableResign(null)
 
         val file = view.showSaveDialog()
         if (file != null) {

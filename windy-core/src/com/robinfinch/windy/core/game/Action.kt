@@ -2,18 +2,18 @@ package com.robinfinch.windy.core.game
 
 import com.robinfinch.windy.core.position.Move;
 
-interface GameAction {
+interface Action {
 
 }
 
-class ExecuteMove(val move: Move, val proposesDraw: Boolean) : GameAction {
+class ExecuteMove(val move: Move, val proposesDraw: Boolean) : Action {
 
 }
 
-object AcceptDraw : GameAction {
+object AcceptDraw : Action {
 
 }
 
-object Resign : GameAction {
+object Resign : Action {
 
 }

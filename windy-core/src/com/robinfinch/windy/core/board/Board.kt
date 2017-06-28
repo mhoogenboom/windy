@@ -46,13 +46,7 @@ class Board : JPanel() {
             repaint()
         }
 
-    interface Listener {
-        fun onMoveEntered(moves: List<Move>): Boolean
-    }
-
-    var listener = object : Listener {
-        override fun onMoveEntered(moves: List<Move>) = false
-    }
+    var onMoveEntered: (List<Move>) -> Boolean = {false}
 
     private class MouseHandler(private val board: Board) : MouseListener, MouseMotionListener {
 
@@ -158,10 +152,6 @@ class Board : JPanel() {
 
         addMouseListener(handler)
         addMouseMotionListener(handler)
-    }
-
-    private fun onMoveEntered(moves: List<Move>): Boolean {
-        return listener.onMoveEntered(moves)
     }
 
     override fun paintComponent(pad: Graphics) {

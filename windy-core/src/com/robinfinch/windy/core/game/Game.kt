@@ -20,5 +20,7 @@ class Game() {
         history.add(move)
     }
 
-    fun history() = ArrayList<Move>(history)
+    fun move(number: Int) = history.getOrNull(number)
+
+    fun moves() = ArrayList<Move>(history)
 }

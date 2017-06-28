@@ -23,7 +23,8 @@ fun Move.formatWithSteps(): String {
 
 fun List<Move>.format(out: BufferedWriter,
                       plyPerLine: Int = 2,
-                      writeDuplicatesInLongForm: Boolean = false) {
+                      writeDuplicatesInLongForm: Boolean = false,
+                      emphasize: Int = -1) {
 
     val position = Position()
     position.start()
@@ -46,7 +47,13 @@ fun List<Move>.format(out: BufferedWriter,
                 else
                     1
 
+        if (ply == emphasize) {
+            out.write("<b>")
+        }
         out.write(if (duplicates == 1) shortForm else move.formatWithSteps())
+        if (ply == emphasize) {
+            out.write("</b>")
+        }
         out.write(" ")
 
         position.execute(move)

@@ -1,8 +1,6 @@
 package com.robinfinch.windy.core.text
 
 import com.robinfinch.windy.core.game.Game
-import com.robinfinch.windy.core.position.Move
-import com.robinfinch.windy.core.position.Position
 import java.io.BufferedWriter
 import java.io.File
 
@@ -10,7 +8,7 @@ class GameWriter {
 
     fun write(file: File, games: List<Game>) {
 
-        file.bufferedWriter().use {out ->
+        file.bufferedWriter().use { out ->
             games.forEach {
                 write(out, it)
             }
@@ -25,7 +23,7 @@ class GameWriter {
         writeTag(out, GameReader.TAG_BLACK, game.black)
         writeTag(out, GameReader.TAG_RESULT, game.result.format())
 
-        game.history().format(out, 8, true)
+        game.moves().format(out, 8, true)
     }
 
     private fun writeTag(out: BufferedWriter, name: String, value: String) {
