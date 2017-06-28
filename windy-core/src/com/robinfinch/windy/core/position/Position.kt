@@ -3,12 +3,12 @@ package com.robinfinch.windy.core.position
 class Position() {
 
     companion object {
-        const val NUMBER_OF_SQUARES = 50
+        val NUMBER_OF_SQUARES = 50
     }
 
-    val empty = Array<Boolean>(1 + NUMBER_OF_SQUARES, { it > 0 })
-    val white = Array<Boolean>(1 + NUMBER_OF_SQUARES, { it == 0 })
-    val king = Array<Boolean>(1 + NUMBER_OF_SQUARES, { false })
+    internal val empty = Array<Boolean>(1 + NUMBER_OF_SQUARES, { it > 0 })
+    internal val white = Array<Boolean>(1 + NUMBER_OF_SQUARES, { it == 0 })
+    internal val king = Array<Boolean>(1 + NUMBER_OF_SQUARES, { false })
 
     fun start() {
         for (square in 1..20) {

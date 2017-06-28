@@ -1,4 +1,4 @@
-package com.robinfinch.windy.ui.board
+package com.robinfinch.windy.core.board
 
 import com.robinfinch.windy.core.position.Generator
 import com.robinfinch.windy.core.position.Move

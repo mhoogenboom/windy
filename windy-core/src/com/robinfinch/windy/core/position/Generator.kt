@@ -6,7 +6,7 @@ class Generator(val position: Position) {
 
     companion object {
 
-        val WHITE_FORWARD_LEFT = intArrayOf(0,
+        private val WHITE_FORWARD_LEFT = intArrayOf(0,
                 0, 0, 0, 0, 0,
                 0, 1, 2, 3, 4,
                 6, 7, 8, 9, 10,
@@ -18,7 +18,7 @@ class Generator(val position: Position) {
                 36, 37, 38, 39, 40,
                 0, 41, 42, 43, 44)
 
-        val WHITE_FORWARD_RIGHT = intArrayOf(0,
+        private val WHITE_FORWARD_RIGHT = intArrayOf(0,
                 0, 0, 0, 0, 0,
                 1, 2, 3, 4, 5,
                 7, 8, 9, 10, 0,
@@ -30,7 +30,7 @@ class Generator(val position: Position) {
                 37, 38, 39, 40, 0,
                 41, 42, 43, 44, 45)
 
-        val BLACK_FORWARD_LEFT = intArrayOf(0,
+        private val BLACK_FORWARD_LEFT = intArrayOf(0,
                 7, 8, 9, 10, 0,
                 11, 12, 13, 14, 15,
                 17, 18, 19, 20, 0,
@@ -42,7 +42,7 @@ class Generator(val position: Position) {
                 47, 48, 49, 50, 0,
                 0, 0, 0, 0, 0)
 
-        val BLACK_FORWARD_RIGHT = intArrayOf(0,
+        private val BLACK_FORWARD_RIGHT = intArrayOf(0,
                 6, 7, 8, 9, 10,
                 0, 11, 12, 13, 14,
                 16, 17, 18, 19, 20,

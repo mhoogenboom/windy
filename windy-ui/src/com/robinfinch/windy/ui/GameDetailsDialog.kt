@@ -4,9 +4,11 @@ import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets
+import java.util.*
 import javax.swing.*
 
-class GameDetailsDialog(parent: JFrame) : JDialog(parent, "Game Details", true) {
+class GameDetailsDialog(parent: JFrame, texts: ResourceBundle)
+    : JDialog(parent, texts.getString("game_details.title"), true) {
 
     private val whiteField = JTextField()
 
@@ -40,7 +42,7 @@ class GameDetailsDialog(parent: JFrame) : JDialog(parent, "Game Details", true) 
 
         gbc.gridx = 0
         gbc.weightx = 0.3
-        add(JLabel("White"), gbc)
+        add(JLabel(texts.getString("game_details.white")), gbc)
 
         gbc.gridx = 1
         gbc.weightx = 0.7
@@ -50,7 +52,7 @@ class GameDetailsDialog(parent: JFrame) : JDialog(parent, "Game Details", true) 
 
         gbc.gridx = 0
         gbc.weightx = 0.3
-        add(JLabel("Black"), gbc)
+        add(JLabel(texts.getString("game_details.black")), gbc)
 
         gbc.gridx = 1
         gbc.weightx = 0.7
@@ -66,7 +68,7 @@ class GameDetailsDialog(parent: JFrame) : JDialog(parent, "Game Details", true) 
         gbc.weightx = 0.0
         gbc.gridwidth = 2
 
-        val done = JButton("Done")
+        val done = JButton(texts.getString("game_details.done"))
         done.addActionListener {
             listener.onGameDetailsEntered(this)
         }

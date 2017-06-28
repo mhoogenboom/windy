@@ -5,13 +5,14 @@ import com.robinfinch.windy.core.game.ExecuteMove
 import com.robinfinch.windy.core.game.Resign
 import com.robinfinch.windy.core.position.Move
 import com.robinfinch.windy.core.position.Position
-import com.robinfinch.windy.ui.board.Board
+import com.robinfinch.windy.core.board.Board
 import com.robinfinch.windy.ui.controller.View
 import com.robinfinch.windy.ui.controller.WindyController
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets
 import java.io.File
+import java.util.*
 import javax.swing.*
 import javax.swing.filechooser.FileFilter
 
@@ -39,9 +40,11 @@ class WindyApp : View, GameDetailsDialog.Listener, Board.Listener {
 
     private val controller: WindyController
 
+    private val texts = ResourceBundle.getBundle("com.robinfinch.windy.ui.texts")
+
     init {
         frame = JFrame()
-        frame.title = "Windy"
+        frame.title = texts.getString("app.name")
         frame.layout = GridBagLayout()
 
         val gbc = GridBagConstraints()
@@ -60,26 +63,29 @@ class WindyApp : View, GameDetailsDialog.Listener, Board.Listener {
         history.isEnabled = false
         history.lineWrap = true
 
+        val sp = JScrollPane(history)
+        sp.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
+
         gbc.gridheight = 1
         gbc.weighty = 1.0
         gbc.gridx = 1
         gbc.fill = GridBagConstraints.BOTH
         gbc.insets = Insets(10, 10, 0, 10)
-        frame.add(JScrollPane(history), gbc)
+        frame.add(sp, gbc)
 
-        acceptDraw = JButton("Accept Draw")
+        acceptDraw = JButton(texts.getString("controls.accept_draw"))
 
         gbc.gridy = 1
         gbc.weighty = 0.0
         gbc.fill = GridBagConstraints.HORIZONTAL
         frame.add(acceptDraw, gbc)
 
-        resign = JButton("Resign")
+        resign = JButton(texts.getString("controls.resign"))
 
         gbc.gridy = 2
         frame.add(resign, gbc)
 
-        proposeDrawField = JCheckBox("propose draw on next move")
+        proposeDrawField = JCheckBox(texts.getString("controls.propose_draw"))
 
         gbc.gridy = 3
         gbc.gridx = 0
@@ -90,7 +96,7 @@ class WindyApp : View, GameDetailsDialog.Listener, Board.Listener {
         frame.pack()
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
-        controller = WindyController(this)
+        controller = WindyController(this, texts)
 
         acceptDraw.addActionListener {
             controller.onActionEntered(AcceptDraw)
@@ -108,7 +114,7 @@ class WindyApp : View, GameDetailsDialog.Listener, Board.Listener {
     }
 
     override fun enterGameDetails() {
-        val dialog = GameDetailsDialog(frame)
+        val dialog = GameDetailsDialog(frame, texts)
         dialog.listener = this
         dialog.setVisible(true)
     }
@@ -119,7 +125,7 @@ class WindyApp : View, GameDetailsDialog.Listener, Board.Listener {
     }
 
     override fun setTitle(title: String) {
-        frame.title = "Windy | ${title}"
+        frame.title = "${texts.getString("app.name")} | ${title}"
     }
 
     override fun setBoard(position: Position, upsideDown: Boolean) {
@@ -150,13 +156,9 @@ class WindyApp : View, GameDetailsDialog.Listener, Board.Listener {
 
         fileChooser.fileFilter = object : FileFilter() {
 
-            override fun accept(f: File): Boolean {
-                return f.name.endsWith(".pdn")
-            }
+            override fun accept(f: File) = f.name.endsWith(".pdn")
 
-            override fun getDescription(): String? {
-                return "PDN file"
-            }
+            override fun getDescription() = "PDN file"
         }
 
         val option = fileChooser.showSaveDialog(frame)

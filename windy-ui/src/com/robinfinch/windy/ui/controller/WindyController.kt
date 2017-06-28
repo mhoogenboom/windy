@@ -6,8 +6,9 @@ import com.robinfinch.windy.core.game.GameAction
 import com.robinfinch.windy.core.text.format
 import java.io.BufferedWriter
 import java.io.StringWriter
+import java.util.*
 
-class WindyController(private val view: View) {
+class WindyController(private val view: View, private val texts: ResourceBundle) {
 
     private val arbiter: Arbiter = Arbiter()
 
@@ -16,7 +17,7 @@ class WindyController(private val view: View) {
     fun onStart() {
         arbiter.setupGame()
 
-        view.setTitle("setting up")
+        view.setTitle(texts.getString("app.setting_up"))
         view.setBoard(arbiter.currentPosition, false)
         view.setHistory("")
 
@@ -27,7 +28,7 @@ class WindyController(private val view: View) {
         arbiter.white = white
         arbiter.black = black
 
-        view.setTitle("${white} - ${black} (local)")
+        view.setTitle("${white} - ${black}")
 
         whiteHasTheBoard = true
         play()
