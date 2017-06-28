@@ -24,6 +24,7 @@ fun Move.formatWithSteps(): String {
 fun List<Move>.format(out: BufferedWriter,
                       plyPerLine: Int = 2,
                       writeDuplicatesInLongForm: Boolean = false,
+                      html: Boolean = false,
                       emphasize: Int = -1) {
 
     val position = Position()
@@ -34,7 +35,11 @@ fun List<Move>.format(out: BufferedWriter,
     for (move in this) {
         if (ply % 2 == 0) {
             if ((ply % plyPerLine == 0) && (ply > 0)) {
-                out.newLine()
+                if (html) {
+                    out.write("<br/>")
+                } else {
+                    out.newLine()
+                }
             }
             out.write("${1 + ply / 2}.")
         }
@@ -47,11 +52,11 @@ fun List<Move>.format(out: BufferedWriter,
                 else
                     1
 
-        if (ply == emphasize) {
+        if (html && (ply == emphasize)) {
             out.write("<b>")
         }
         out.write(if (duplicates == 1) shortForm else move.formatWithSteps())
-        if (ply == emphasize) {
+        if (html && (ply == emphasize)) {
             out.write("</b>")
         }
         out.write(" ")

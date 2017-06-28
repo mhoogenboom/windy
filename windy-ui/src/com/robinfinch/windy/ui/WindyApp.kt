@@ -7,6 +7,7 @@ import com.robinfinch.windy.core.game.Resign
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.ui.controller.View
 import com.robinfinch.windy.ui.controller.WindyController
+import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets
@@ -31,7 +32,7 @@ class WindyApp : View, GameDetailsDialog.Listener {
 
     private val board: Board
 
-    private val history: JTextArea
+    private val history: JTextPane
 
     private val nextMove: JButton
     private val acceptDraw: JButton
@@ -55,12 +56,14 @@ class WindyApp : View, GameDetailsDialog.Listener {
         gbc.gridy = 0
         gbc.gridheight = 4
         gbc.gridx = 0
-        gbc.insets = Insets(0, 150, 0, 0)
+        gbc.insets = Insets(0, 120, 0, 0)
         frame.add(board, gbc)
 
-        history = JTextArea(0, 15)
-        history.isEnabled = false
-        history.lineWrap = true
+        history = JTextPane()
+        history.preferredSize = Dimension(100, 0)
+        history.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+        history.contentType = "text/html"
+        history.isEditable = false
 
         val sp = JScrollPane(history)
         sp.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
@@ -97,7 +100,7 @@ class WindyApp : View, GameDetailsDialog.Listener {
         gbc.gridy = 4
         gbc.gridx = 0
         gbc.fill = GridBagConstraints.NONE
-        gbc.insets = Insets(10, 150, 10, 0)
+        gbc.insets = Insets(10, 120, 10, 0)
         frame.add(proposeDrawField, gbc)
 
         frame.pack()
@@ -124,7 +127,7 @@ class WindyApp : View, GameDetailsDialog.Listener {
     }
 
     override fun setTitle(title: String) {
-        frame.title = texts.getStrng("app.title", title)
+        frame.title = texts.getString("app.title", title)
     }
 
     override fun setBoard(position: Position, upsideDown: Boolean) {
@@ -219,5 +222,5 @@ fun JButton.enableWithActionListener(listener: (ActionEvent) -> Unit) {
     isEnabled = true
 }
 
-fun ResourceBundle.getStrng(key: String, vararg params: String): String =
+fun ResourceBundle.getString(key: String, vararg params: String): String =
     MessageFormat.format(getString(key), *params)

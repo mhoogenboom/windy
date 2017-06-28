@@ -4,7 +4,7 @@ import com.robinfinch.windy.core.game.Action
 import com.robinfinch.windy.core.game.Arbiter
 import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.text.format
-import com.robinfinch.windy.ui.getStrng
+import com.robinfinch.windy.ui.getString
 import java.io.BufferedWriter
 import java.io.StringWriter
 import java.util.*
@@ -64,23 +64,23 @@ class WindyController(private val view: View, private val texts: ResourceBundle)
 
             Game.Result.UNKNOWN -> {
                 val history = StringWriter()
-                BufferedWriter(history).use { out -> arbiter.history.format(out) }
+                BufferedWriter(history).use { out -> arbiter.history.format(out, html = true) }
 
                 view.setBoard(arbiter.currentPosition, !whiteHasTheBoard)
                 view.setHistory(history.toString())
                 view.enableAcceptDraw(if (arbiter.drawProposed) this::onActionEntered else null)
 
                 val player = if (whiteHasTheBoard) arbiter.white else arbiter.black
-                view.showMessage(texts.getStrng("play.has_the_board", player))
+                view.showMessage(texts.getString("play.has_the_board", player))
             }
 
             Game.Result.WHITE_WIN -> {
-                view.showMessage(texts.getStrng("play.win", arbiter.white))
+                view.showMessage(texts.getString("play.win", arbiter.white))
                 saveGame()
             }
 
             Game.Result.BLACK_WIN -> {
-                view.showMessage(texts.getStrng("play.win", arbiter.black))
+                view.showMessage(texts.getString("play.win", arbiter.black))
                 saveGame()
             }
 
