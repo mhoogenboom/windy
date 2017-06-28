@@ -39,10 +39,12 @@ class Position() {
 
         empty[move.end] = false
         white[move.end] = white[move.start]
-        king[move.end] = king[move.start]
+        king[move.end] = king[move.start] || (move.end in promotionRow())
 
         white[0] = !white[0]
     }
+
+    fun promotionRow() = if (white[0]) 1..5 else 46..50
 
     fun copy(): Position {
         val copy = Position()

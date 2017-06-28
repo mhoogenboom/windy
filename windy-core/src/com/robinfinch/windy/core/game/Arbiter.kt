@@ -47,6 +47,9 @@ class Arbiter {
     val currentPosition
         get() = position.copy()
 
+    val currentHistory
+        get() = game.history()
+
     val drawProposed
         get() = (state == State.DRAW_PROPOSED)
 

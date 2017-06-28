@@ -7,9 +7,13 @@ interface View {
 
     fun enterGameDetails()
 
-    fun enableAcceptDraw(enabled: Boolean)
+    fun setTitle(title: String)
 
     fun setBoard(position: Position, upsideDown: Boolean)
+
+    fun setHistory(moves: String)
+
+    fun enableAcceptDraw(enabled: Boolean)
 
     fun showMessage(message: String)
 

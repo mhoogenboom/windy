@@ -25,31 +25,7 @@ class GameWriter {
         writeTag(out, GameReader.TAG_BLACK, game.black)
         writeTag(out, GameReader.TAG_RESULT, game.result.format())
 
-        val position = Position()
-        position.start()
-
-        var ply = 0
-
-        for (move in game.history()) {
-            if (ply % 2 == 0) {
-                if (ply % 8 == 0) {
-                    out.newLine()
-                }
-                out.write("${1 + ply / 2}.")
-            }
-
-            val shortForm = move.format()
-
-            val duplicates = position.validMoves()
-                    .map(Move::format)
-                    .count {it == shortForm}
-
-            out.write(if (duplicates == 1) shortForm else move.formatWithSteps())
-            out.write(" ")
-
-            position.execute(move)
-            ply++
-        }
+        game.history().format(out, 8, true)
     }
 
     private fun writeTag(out: BufferedWriter, name: String, value: String) {
@@ -59,4 +35,5 @@ class GameWriter {
             out.newLine()
         }
     }
+
 }

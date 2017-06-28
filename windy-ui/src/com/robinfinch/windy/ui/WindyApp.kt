@@ -17,6 +17,8 @@ import javax.swing.filechooser.FileFilter
 
 fun main(args: Array<String>) {
 
+    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+
     SwingUtilities.invokeLater {
         WindyApp().start()
     }
@@ -28,6 +30,8 @@ class WindyApp : View, GameDetailsDialog.Listener, Board.Listener {
 
     private val board: Board
 
+    private val history: JTextArea
+
     private val acceptDraw: JButton
     private val resign: JButton
 
@@ -36,42 +40,51 @@ class WindyApp : View, GameDetailsDialog.Listener, Board.Listener {
     private val controller: WindyController
 
     init {
-        board = Board()
-        board.style = Board.Style()
-        board.listener = this
-
         frame = JFrame()
-        frame.title = "Windy App"
+        frame.title = "Windy"
         frame.layout = GridBagLayout()
 
         val gbc = GridBagConstraints()
 
+        board = Board()
+        board.style = Board.Style()
+        board.listener = this
+
         gbc.gridy = 0
         gbc.gridheight = 3
-
         gbc.gridx = 0
+        gbc.insets = Insets(0, 150, 0, 0)
         frame.add(board, gbc)
+
+        history = JTextArea(0, 15)
+        history.isEnabled = false
+        history.lineWrap = true
+
+        gbc.gridheight = 1
+        gbc.weighty = 1.0
+        gbc.gridx = 1
+        gbc.fill = GridBagConstraints.BOTH
+        gbc.insets = Insets(10, 10, 0, 10)
+        frame.add(JScrollPane(history), gbc)
 
         acceptDraw = JButton("Accept Draw")
 
+        gbc.gridy = 1
+        gbc.weighty = 0.0
         gbc.fill = GridBagConstraints.HORIZONTAL
-        gbc.gridheight = 1
-        gbc.insets = Insets(10, 10, 0, 10)
-
-        gbc.gridx = 1
         frame.add(acceptDraw, gbc)
 
         resign = JButton("Resign")
 
-        gbc.gridy = 1
+        gbc.gridy = 2
         frame.add(resign, gbc)
 
         proposeDrawField = JCheckBox("propose draw on next move")
 
-        gbc.fill = GridBagConstraints.NONE
         gbc.gridy = 3
         gbc.gridx = 0
-        gbc.insets = Insets(10, 10, 10, 10)
+        gbc.fill = GridBagConstraints.NONE
+        gbc.insets = Insets(10, 150, 10, 0)
         frame.add(proposeDrawField, gbc)
 
         frame.pack()
@@ -105,13 +118,21 @@ class WindyApp : View, GameDetailsDialog.Listener, Board.Listener {
         return controller.onGameDetailsEntered(dialog.white, dialog.black)
     }
 
-    override fun enableAcceptDraw(enabled: Boolean) {
-        acceptDraw.isEnabled = enabled
+    override fun setTitle(title: String) {
+        frame.title = "Windy | ${title}"
     }
 
     override fun setBoard(position: Position, upsideDown: Boolean) {
         board.position = position
         board.upsideDown = upsideDown
+    }
+
+    override fun setHistory(moves: String) {
+        history.text = moves
+    }
+
+    override fun enableAcceptDraw(enabled: Boolean) {
+        acceptDraw.isEnabled = enabled
     }
 
     override fun onMoveEntered(moves: List<Move>): Boolean {

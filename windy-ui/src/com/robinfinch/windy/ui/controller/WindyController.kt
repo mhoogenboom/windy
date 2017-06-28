@@ -3,6 +3,9 @@ package com.robinfinch.windy.ui.controller
 import com.robinfinch.windy.core.game.Arbiter
 import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.game.GameAction
+import com.robinfinch.windy.core.text.format
+import java.io.BufferedWriter
+import java.io.StringWriter
 
 class WindyController(private val view: View) {
 
@@ -13,12 +16,18 @@ class WindyController(private val view: View) {
     fun onStart() {
         arbiter.setupGame()
 
+        view.setTitle("setting up")
+        view.setBoard(arbiter.currentPosition, false)
+        view.setHistory("")
+
         view.enterGameDetails()
     }
 
     fun onGameDetailsEntered(white: String, black: String) {
         arbiter.white = white
         arbiter.black = black
+
+        view.setTitle("${white} - ${black} (local)")
 
         whiteHasTheBoard = true
         play()
@@ -50,12 +59,14 @@ class WindyController(private val view: View) {
         when (arbiter.result) {
 
             Game.Result.UNKNOWN -> {
-                view.enableAcceptDraw(arbiter.drawProposed)
+                val history = StringWriter()
+                BufferedWriter(history).use { out -> arbiter.currentHistory.format(out) }
 
                 view.setBoard(arbiter.currentPosition, !whiteHasTheBoard)
+                view.setHistory(history.toString())
+                view.enableAcceptDraw(arbiter.drawProposed)
 
                 val player = if (whiteHasTheBoard) arbiter.white else arbiter.black
-
                 view.showMessage("The board is yours, ${player}")
             }
 
