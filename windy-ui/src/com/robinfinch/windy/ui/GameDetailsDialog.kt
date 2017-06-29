@@ -12,26 +12,13 @@ class GameDetailsDialog(parent: JFrame, texts: ResourceBundle)
 
     private val whiteField = JTextField()
 
-    val white
-        get() = whiteField.text
-
     private val blackField = JTextField()
 
-    val black
-        get() = blackField.text
-
-    interface Listener {
-        fun onGameDetailsEntered(dialog: GameDetailsDialog)
-    }
-
-    var listener = object : Listener {
-        override fun onGameDetailsEntered(dialog: GameDetailsDialog) {}
-    }
+    var onGameDetailsEntered: (String, String) -> Unit = {white, black -> }
 
     init {
         layout = GridBagLayout()
         size = Dimension(300, 150)
-        setLocationRelativeTo(parent)
 
         val gbc = GridBagConstraints()
         gbc.insets = Insets(10, 10, 0, 10)
@@ -70,9 +57,16 @@ class GameDetailsDialog(parent: JFrame, texts: ResourceBundle)
 
         val done = JButton(texts.getString("game_details.done"))
         done.addActionListener {
-            listener.onGameDetailsEntered(this)
+            setVisible(false)
+            onGameDetailsEntered(whiteField.text, blackField.text)
         }
 
         add(done, gbc)
+    }
+
+    fun show(onGameDetailsEntered: (String, String) -> Unit) {
+        this.onGameDetailsEntered = onGameDetailsEntered
+        setLocationRelativeTo(parent)
+        setVisible(true)
     }
 }

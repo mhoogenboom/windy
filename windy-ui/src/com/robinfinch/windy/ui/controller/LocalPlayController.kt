@@ -9,7 +9,7 @@ import java.io.BufferedWriter
 import java.io.StringWriter
 import java.util.*
 
-class WindyController(private val view: View, private val texts: ResourceBundle) {
+class LocalPlayController(private val view: View, private val texts: ResourceBundle) {
 
     private val arbiter: Arbiter = Arbiter()
 
@@ -21,10 +21,8 @@ class WindyController(private val view: View, private val texts: ResourceBundle)
         view.setTitle(texts.getString("app.setting_up"))
         view.setBoard(arbiter.currentPosition, false)
         view.setHistory("")
-        view.enableMovesOnBoard(this::onActionEntered)
-        view.enableResign(this::onActionEntered)
 
-        view.enterGameDetails()
+        view.enterGameDetails(this::onGameDetailsEntered)
     }
 
     fun onGameDetailsEntered(white: String, black: String) {
@@ -32,12 +30,14 @@ class WindyController(private val view: View, private val texts: ResourceBundle)
         arbiter.black = black
 
         view.setTitle("${white} - ${black}")
+        view.enableMovesOnBoard(this::onActionEntered)
+        view.enableResign(this::onActionEntered)
 
         whiteHasTheBoard = true
         play()
     }
 
-    fun onActionEntered(action: Action): Boolean {
+    private fun onActionEntered(action: Action): Boolean {
 
         if (whiteHasTheBoard) {
             if (arbiter.acceptWhite(action)) {
@@ -93,6 +93,7 @@ class WindyController(private val view: View, private val texts: ResourceBundle)
 
     private fun saveGame() {
 
+        view.enableMovesOnBoard(null)
         view.enableAcceptDraw(null)
         view.enableResign(null)
 

@@ -59,6 +59,8 @@ class GameReader {
 
             position.start()
             game = Game()
+
+            readingHeader = true
         }
 
         val groups = TAG_REGEX.matchEntire(text)?.groupValues

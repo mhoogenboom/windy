@@ -6,7 +6,8 @@ import com.robinfinch.windy.core.game.ExecuteMove
 import com.robinfinch.windy.core.game.Resign
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.ui.controller.View
-import com.robinfinch.windy.ui.controller.WindyController
+import com.robinfinch.windy.ui.controller.LocalPlayController
+import com.robinfinch.windy.ui.controller.ReplayController
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -26,7 +27,7 @@ fun main(args: Array<String>) {
     }
 }
 
-class WindyApp : View, GameDetailsDialog.Listener {
+class WindyApp : View {
 
     private val frame: JFrame
 
@@ -37,10 +38,11 @@ class WindyApp : View, GameDetailsDialog.Listener {
     private val nextMove: JButton
     private val acceptDraw: JButton
     private val resign: JButton
-
     private val proposeDrawField: JCheckBox
 
-    private val controller: WindyController
+    private val gameDetailsDialog: GameDetailsDialog
+
+    private val controller: LocalPlayController
 
     private val texts = ResourceBundle.getBundle("com.robinfinch.windy.ui.texts")
 
@@ -106,7 +108,9 @@ class WindyApp : View, GameDetailsDialog.Listener {
         frame.pack()
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
-        controller = WindyController(this, texts)
+        gameDetailsDialog = GameDetailsDialog(frame, texts)
+
+        controller = LocalPlayController(this, texts)
     }
 
     fun start() {
@@ -115,15 +119,8 @@ class WindyApp : View, GameDetailsDialog.Listener {
         controller.onStart()
     }
 
-    override fun enterGameDetails() {
-        val dialog = GameDetailsDialog(frame, texts)
-        dialog.listener = this
-        dialog.setVisible(true)
-    }
-
-    override fun onGameDetailsEntered(dialog: GameDetailsDialog) {
-        dialog.setVisible(false)
-        controller.onGameDetailsEntered(dialog.white, dialog.black)
+    override fun enterGameDetails(onGameDetailsEntered: (String, String) -> Unit) {
+        gameDetailsDialog.show(onGameDetailsEntered)
     }
 
     override fun setTitle(title: String) {

@@ -6,7 +6,7 @@ import java.io.File
 
 interface View {
 
-    fun enterGameDetails()
+    fun enterGameDetails(onGameDetailsEntered: (String, String) -> Unit)
 
     fun setTitle(title: String)
 
