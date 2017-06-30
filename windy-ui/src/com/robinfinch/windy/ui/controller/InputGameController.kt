@@ -4,7 +4,6 @@ import com.robinfinch.windy.core.game.Action
 import com.robinfinch.windy.core.game.Arbiter
 import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.text.format
-import com.robinfinch.windy.ui.getString
 import java.io.BufferedWriter
 import java.io.StringWriter
 import java.util.*

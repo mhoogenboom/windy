@@ -53,4 +53,13 @@ class Position() {
         System.arraycopy(king, 0, copy.king, 0, 1 + NUMBER_OF_SQUARES);
         return copy
     }
+
+    fun index(square: Int) =
+            if (empty[square])
+                0
+            else
+                if (white[square])
+                    if (king[square]) 2 else 1
+                else
+                    if (king[square]) 4 else 3
 }

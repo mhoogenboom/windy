@@ -46,7 +46,7 @@ class Board : JPanel() {
             repaint()
         }
 
-    var onMoveEntered: (List<Move>) -> Boolean = {false}
+    var onMoveEntered: (List<Move>) -> Boolean = { false }
 
     private class MouseHandler(private val board: Board) : MouseListener, MouseMotionListener {
 

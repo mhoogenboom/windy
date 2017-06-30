@@ -5,9 +5,8 @@ import com.robinfinch.windy.core.game.AcceptDraw
 import com.robinfinch.windy.core.game.ExecuteMove
 import com.robinfinch.windy.core.game.Resign
 import com.robinfinch.windy.core.position.Position
-import com.robinfinch.windy.ui.controller.View
 import com.robinfinch.windy.ui.controller.LocalPlayController
-import com.robinfinch.windy.ui.controller.ReplayController
+import com.robinfinch.windy.ui.controller.View
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -220,4 +219,4 @@ fun JButton.enableWithActionListener(listener: (ActionEvent) -> Unit) {
 }
 
 fun ResourceBundle.getString(key: String, vararg params: String): String =
-    MessageFormat.format(getString(key), *params)
+        MessageFormat.format(getString(key), *params)

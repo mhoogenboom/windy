@@ -14,7 +14,7 @@ class GameDetailsDialog(parent: JFrame, texts: ResourceBundle)
 
     private val blackField = JTextField()
 
-    var onGameDetailsEntered: (String, String) -> Unit = {white, black -> }
+    var onGameDetailsEntered: (String, String) -> Unit = { white, black -> }
 
     init {
         layout = GridBagLayout()
