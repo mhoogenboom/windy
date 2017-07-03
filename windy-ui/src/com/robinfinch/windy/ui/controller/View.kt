@@ -6,9 +6,9 @@ import java.io.File
 
 interface View {
 
-    fun enterGameDetails(onGameDetailsEntered: (String, String) -> Unit)
-
     fun setTitle(title: String)
+
+    fun enableMenu(enabled: Boolean)
 
     fun setBoard(position: Position, upsideDown: Boolean = false)
 
@@ -21,6 +21,8 @@ interface View {
     fun enableAcceptDraw(onActionEntered: ((Action) -> Boolean)?)
 
     fun enableResign(onActionEntered: ((Action) -> Boolean)?)
+
+    fun enterGameDetails(onGameDetailsEntered: (String, String) -> Unit)
 
     fun showMessage(message: String)
 

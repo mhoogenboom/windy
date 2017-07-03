@@ -5,6 +5,7 @@ import com.robinfinch.windy.core.game.AcceptDraw
 import com.robinfinch.windy.core.game.ExecuteMove
 import com.robinfinch.windy.core.game.Resign
 import com.robinfinch.windy.core.position.Position
+import com.robinfinch.windy.ui.controller.InputGameController
 import com.robinfinch.windy.ui.controller.LocalPlayController
 import com.robinfinch.windy.ui.controller.View
 import java.awt.Dimension
@@ -30,6 +31,8 @@ class WindyApp : View {
 
     private val frame: JFrame
 
+    private val menu: JMenu
+
     private val board: Board
 
     private val history: JTextPane
@@ -41,13 +44,32 @@ class WindyApp : View {
 
     private val gameDetailsDialog: GameDetailsDialog
 
-    private val controller: LocalPlayController
+    private val localPlayController: LocalPlayController
+    private val inputGameController: InputGameController
 
     private val texts = ResourceBundle.getBundle("com.robinfinch.windy.ui.texts")
 
     init {
+        localPlayController = LocalPlayController(this, texts)
+
+        inputGameController = InputGameController(this, texts)
+
         frame = JFrame()
         frame.layout = GridBagLayout()
+
+        val localPlayMenu = JMenuItem(texts.getString("app.menu_local_play"))
+        localPlayMenu.addActionListener { localPlayController.onStart() }
+
+        val inputGameMenu = JMenuItem(texts.getString("app.menu_input_game"))
+        inputGameMenu.addActionListener { inputGameController.onStart() }
+
+        menu = JMenu(texts.getString("app.menu_title"))
+        menu.add(localPlayMenu)
+        menu.add(inputGameMenu)
+
+        val mb = JMenuBar()
+        mb.add(menu)
+        frame.jMenuBar = mb
 
         val gbc = GridBagConstraints()
 
@@ -97,6 +119,7 @@ class WindyApp : View {
         frame.add(resign, gbc)
 
         proposeDrawField = JCheckBox(texts.getString("controls.propose_draw"))
+        proposeDrawField.isEnabled = false
 
         gbc.gridy = 4
         gbc.gridx = 0
@@ -108,22 +131,18 @@ class WindyApp : View {
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
         gameDetailsDialog = GameDetailsDialog(frame, texts)
-
-        controller = LocalPlayController(this, texts)
     }
 
     fun start() {
         frame.setVisible(true)
-
-        controller.onStart()
-    }
-
-    override fun enterGameDetails(onGameDetailsEntered: (String, String) -> Unit) {
-        gameDetailsDialog.show(onGameDetailsEntered)
     }
 
     override fun setTitle(title: String) {
         frame.title = texts.getString("app.title", title)
+    }
+
+    override fun enableMenu(enabled: Boolean) {
+        menu.isEnabled = enabled
     }
 
     override fun setBoard(position: Position, upsideDown: Boolean) {
@@ -148,12 +167,14 @@ class WindyApp : View {
 
         if (onActionEntered == null) {
             board.onMoveEntered = { false }
+            proposeDrawField.isEnabled = false
         } else {
             board.onMoveEntered = { moves ->
                 val action = ExecuteMove(moves[0], proposeDrawField.isSelected) // todo
                 proposeDrawField.isSelected = false
                 onActionEntered(action)
             }
+            proposeDrawField.isEnabled = true
         }
     }
 
@@ -173,6 +194,10 @@ class WindyApp : View {
         } else {
             resign.enableWithActionListener { onActionEntered(Resign) }
         }
+    }
+
+    override fun enterGameDetails(onGameDetailsEntered: (String, String) -> Unit) {
+        gameDetailsDialog.show(onGameDetailsEntered)
     }
 
     override fun showMessage(message: String) {

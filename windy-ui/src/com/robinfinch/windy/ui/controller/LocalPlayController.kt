@@ -3,6 +3,7 @@ package com.robinfinch.windy.ui.controller
 import com.robinfinch.windy.core.game.Action
 import com.robinfinch.windy.core.game.Arbiter
 import com.robinfinch.windy.core.game.Game
+import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.core.text.format
 import com.robinfinch.windy.ui.getString
 import java.io.BufferedWriter
@@ -16,11 +17,12 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
     private var whiteHasTheBoard: Boolean = true
 
     fun onStart() {
+        view.enableMenu(false)
+
         arbiter.setupGame()
 
         view.setTitle(texts.getString("app.setting_up"))
         view.setBoard(arbiter.currentPosition, false)
-        view.setHistory("")
 
         view.enterGameDetails(this::onGameDetailsEntered)
     }
@@ -102,6 +104,8 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
             arbiter.writeGame(file)
         }
 
-        onStart()
+        view.setBoard(Position(), false)
+        view.setHistory("")
+        view.enableMenu(true)
     }
 }
