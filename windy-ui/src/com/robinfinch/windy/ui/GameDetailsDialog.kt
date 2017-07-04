@@ -63,7 +63,7 @@ class GameDetailsDialog(parent: JFrame, texts: ResourceBundle)
 
         gbc.gridx = 0
         gbc.weightx = 0.3
-        add(JLabel(texts.getString("game_details.black")), gbc)
+        add(JLabel(texts.getString("game_details.date")), gbc)
 
         gbc.gridx = 1
         gbc.weightx = 0.7

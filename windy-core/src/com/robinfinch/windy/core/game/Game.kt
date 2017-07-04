@@ -1,8 +1,9 @@
 package com.robinfinch.windy.core.game
 
 import com.robinfinch.windy.core.position.Move
+import java.io.Serializable
 
-class Game() {
+class Game() : Serializable {
 
     enum class Result {
         UNKNOWN, WHITE_WIN, DRAW, BLACK_WIN

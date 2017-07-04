@@ -3,7 +3,7 @@ package com.robinfinch.windy.db
 import com.robinfinch.windy.core.position.Position
 import java.io.*
 
-class PositionIndex(dataDir: File) {
+internal class PositionIndex(dataDir: File) {
 
     private val indexFile = File(dataDir, "position_index.ser")
 
@@ -44,7 +44,7 @@ class PositionIndex(dataDir: File) {
 
 }
 
-interface Node {
+interface Node : Serializable {
 
     fun child(i: Int, createChild: () -> Node): Node
 
@@ -52,7 +52,7 @@ interface Node {
 
 }
 
-class Tree(private val children: Array<Node?>) : Node {
+internal class Tree(private val children: Array<Node?>) : Node {
 
     override fun child(i: Int, createChild: () -> Node): Node {
         if (children[i] == null) {
@@ -66,7 +66,7 @@ class Tree(private val children: Array<Node?>) : Node {
     }
 }
 
-class Leaf(private val games: MutableList<Long>) : Node {
+internal class Leaf(private val games: MutableList<Long>) : Node {
 
     override fun child(i: Int, createChild: () -> Node): Node {
         throw UnsupportedOperationException("Leafs don't have children")

@@ -2,7 +2,7 @@ package com.robinfinch.windy.db
 
 import java.io.*
 
-class PlayerIndex(dataDir: File) {
+internal class PlayerIndex(dataDir: File) {
 
     private val indexFile = File(dataDir, "player_index.ser")
 
@@ -35,6 +35,6 @@ class PlayerIndex(dataDir: File) {
     }
 }
 
-class GamesPlayed(val withWhite: MutableList<Long>, val withBlack: MutableList<Long>) {
+internal class GamesPlayed(val withWhite: MutableList<Long>, val withBlack: MutableList<Long>) : Serializable {
 
 }

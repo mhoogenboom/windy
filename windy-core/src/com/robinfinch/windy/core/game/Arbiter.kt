@@ -1,8 +1,6 @@
 package com.robinfinch.windy.core.game
 
 import com.robinfinch.windy.core.position.Position
-import com.robinfinch.windy.core.text.GameWriter
-import java.io.File
 
 class Arbiter {
 
@@ -151,7 +149,7 @@ class Arbiter {
         state = State.FINISHED
     }
 
-    fun writeGame(file: File) {
-        GameWriter().write(file, listOf(game))
+    fun saveGame(storage: Storage) {
+        storage.store(game)
     }
 }

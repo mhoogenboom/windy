@@ -1,10 +1,11 @@
 package com.robinfinch.windy.db
 
 import com.robinfinch.windy.core.game.Game
+import com.robinfinch.windy.core.game.Storage
 import com.robinfinch.windy.core.position.Position
 import java.io.*
 
-class Database(private val dataDir: File) {
+class Database(private val dataDir: File) : Storage {
 
     private val idFile = File(dataDir, "id.ser")
 
@@ -12,7 +13,7 @@ class Database(private val dataDir: File) {
 
     private val playerIndex: PlayerIndex = PlayerIndex(dataDir)
 
-    private val positionIndex: PositionIndex = PositionIndex()
+    private val positionIndex: PositionIndex = PositionIndex(dataDir)
 
     init {
         id =
@@ -25,7 +26,7 @@ class Database(private val dataDir: File) {
                 }
     }
 
-    fun saveGame(game: Game) {
+    override fun store(game: Game) {
 
         storeGame(game)
 
@@ -43,7 +44,7 @@ class Database(private val dataDir: File) {
         }
     }
 
-    fun findGamesByPlayer(name: String, includeWhite: Boolean = true, includeBlack: Boolean = true): List<Game> {
+    override fun findByPlayer(name: String, includeWhite: Boolean, includeBlack: Boolean): List<Game> {
 
         val games = mutableListOf<Game>()
 
@@ -58,7 +59,7 @@ class Database(private val dataDir: File) {
         return games
     }
 
-    fun findGamesByPosition(position: Position): List<Game> {
+    override fun findByPosition(position: Position): List<Game> {
 
         return positionIndex.find(position).map(this::loadGame)
     }

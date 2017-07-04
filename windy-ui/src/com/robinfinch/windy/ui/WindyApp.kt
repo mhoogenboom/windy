@@ -5,6 +5,7 @@ import com.robinfinch.windy.core.game.AcceptDraw
 import com.robinfinch.windy.core.game.ExecuteMove
 import com.robinfinch.windy.core.game.Resign
 import com.robinfinch.windy.core.position.Position
+import com.robinfinch.windy.db.Database
 import com.robinfinch.windy.ui.controller.InputGameController
 import com.robinfinch.windy.ui.controller.LocalPlayController
 import com.robinfinch.windy.ui.controller.View
@@ -50,9 +51,11 @@ class WindyApp : View {
     private val texts = ResourceBundle.getBundle("com.robinfinch.windy.ui.texts")
 
     init {
-        localPlayController = LocalPlayController(this, texts)
+        val db = Database(File("data"))
 
-        inputGameController = InputGameController(this, texts)
+        localPlayController = LocalPlayController(this, texts, db)
+
+        inputGameController = InputGameController(this, texts, db)
 
         frame = JFrame()
         frame.layout = GridBagLayout()

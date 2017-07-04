@@ -5,6 +5,7 @@ import com.robinfinch.windy.core.game.Arbiter
 import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.core.text.format
+import com.robinfinch.windy.db.Database
 import com.robinfinch.windy.ui.GameDetails
 import com.robinfinch.windy.ui.getString
 import java.io.BufferedWriter
@@ -12,7 +13,7 @@ import java.io.StringWriter
 import java.time.LocalDate
 import java.util.*
 
-class LocalPlayController(private val view: View, private val texts: ResourceBundle) {
+class LocalPlayController(private val view: View, private val texts: ResourceBundle, private val db: Database) {
 
     private val arbiter: Arbiter = Arbiter()
 
@@ -103,10 +104,7 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
         view.enableAcceptDraw(null)
         view.enableResign(null)
 
-        val file = view.showSaveDialog()
-        if (file != null) {
-            arbiter.writeGame(file)
-        }
+        arbiter.saveGame(db)
 
         view.setBoard(Position(), false)
         view.setHistory("")
