@@ -7,6 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
+    <orderEntry type="library" name="Dagger 2.11" level="project" />
     <orderEntry type="module" module-name="windy-core" />
     <orderEntry type="module" module-name="windy-db" />
     <orderEntry type="sourceFolder" forTests="false" />
