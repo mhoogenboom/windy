@@ -12,12 +12,19 @@ import java.io.BufferedWriter
 import java.io.StringWriter
 import java.time.LocalDate
 import java.util.*
+import javax.swing.JMenuItem
 
 class LocalPlayController(private val view: View, private val texts: ResourceBundle, private val db: Database) {
 
     private val arbiter: Arbiter = Arbiter()
 
     private var whiteHasTheBoard: Boolean = true
+
+    fun attachToMenu(): JMenuItem {
+        val menuItem = JMenuItem(texts.getString("app.menu_local_play"))
+        menuItem.addActionListener { onStart() }
+        return menuItem
+    }
 
     fun onStart() {
         view.enableMenu(false)

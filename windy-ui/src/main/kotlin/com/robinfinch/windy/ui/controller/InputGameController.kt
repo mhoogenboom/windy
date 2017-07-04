@@ -10,12 +10,19 @@ import com.robinfinch.windy.ui.GameDetails
 import java.io.BufferedWriter
 import java.io.StringWriter
 import java.util.*
+import javax.swing.JMenuItem
 
 class InputGameController(private val view: View, private val texts: ResourceBundle, private val db: Database) {
 
     private val arbiter: Arbiter = Arbiter()
 
     private var whiteHasTheBoard: Boolean = true
+
+    fun attachToMenu(): JMenuItem {
+        val menuItem = JMenuItem(texts.getString("app.menu_input_game"))
+        menuItem.addActionListener { onStart() }
+        return menuItem
+    }
 
     fun onStart() {
         view.enableMenu(false)

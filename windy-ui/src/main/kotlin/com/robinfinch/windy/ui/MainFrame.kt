@@ -19,9 +19,7 @@ import java.text.MessageFormat
 import java.util.*
 import javax.swing.*
 
-class MainFrame(private val texts: ResourceBundle,
-                onStartLocalPlay: () -> Unit,
-                onStartInputGame: () -> Unit) : View {
+class MainFrame(private val texts: ResourceBundle) : View {
 
     private val frame: JFrame
 
@@ -42,15 +40,7 @@ class MainFrame(private val texts: ResourceBundle,
         frame = JFrame()
         frame.layout = GridBagLayout()
 
-        val localPlayMenu = JMenuItem(texts.getString("app.menu_local_play"))
-        localPlayMenu.addActionListener { onStartLocalPlay() }
-
-        val inputGameMenu = JMenuItem(texts.getString("app.menu_input_game"))
-        inputGameMenu.addActionListener { onStartInputGame() }
-
         menu = JMenu(texts.getString("app.menu_title"))
-        menu.add(localPlayMenu)
-        menu.add(inputGameMenu)
 
         val mb = JMenuBar()
         mb.add(menu)
@@ -118,7 +108,12 @@ class MainFrame(private val texts: ResourceBundle,
         gameDetailsDialog = GameDetailsDialog(frame, texts)
     }
 
-    fun show() {
+    override fun show(vararg plugins: JMenuItem) {
+
+        for (plugin in plugins) {
+            menu.add(plugin)
+        }
+
         frame.setVisible(true)
     }
 

@@ -4,8 +4,11 @@ import com.robinfinch.windy.core.game.Action
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.ui.GameDetails
 import java.io.File
+import javax.swing.JMenuItem
 
 interface View {
+
+    fun show(vararg plugins: JMenuItem)
 
     fun setTitle(title: String)
 
