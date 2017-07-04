@@ -2,6 +2,7 @@ package com.robinfinch.windy.ui.controller
 
 import com.robinfinch.windy.core.game.Action
 import com.robinfinch.windy.core.position.Position
+import com.robinfinch.windy.ui.GameDetails
 import java.io.File
 
 interface View {
@@ -22,7 +23,7 @@ interface View {
 
     fun enableResign(onActionEntered: ((Action) -> Boolean)?)
 
-    fun enterGameDetails(onGameDetailsEntered: (String, String) -> Unit)
+    fun enterGameDetails(date: String, onGameDetailsEntered: (GameDetails) -> Unit)
 
     fun showMessage(message: String)
 

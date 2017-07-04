@@ -44,6 +44,22 @@ class Arbiter {
             }
         }
 
+    var event
+        get() = game.event
+        set(event) {
+            if (state == State.SETTING_UP) {
+                game.event = event
+            }
+        }
+
+    var date
+        get() = game.date
+        set(date) {
+            if (state == State.SETTING_UP) {
+                game.date = date
+            }
+        }
+
     val currentPosition
         get() = position.copy()
 

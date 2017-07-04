@@ -196,7 +196,8 @@ class WindyApp : View {
         }
     }
 
-    override fun enterGameDetails(onGameDetailsEntered: (String, String) -> Unit) {
+    override fun enterGameDetails(date: String, onGameDetailsEntered: (GameDetails) -> Unit) {
+        gameDetailsDialog.initialiseDate(date)
         gameDetailsDialog.show(onGameDetailsEntered)
     }
 

@@ -5,8 +5,10 @@ import com.robinfinch.windy.core.game.Arbiter
 import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.core.text.format
+import com.robinfinch.windy.ui.GameDetails
 import java.io.BufferedWriter
 import java.io.StringWriter
+import java.time.LocalDate
 import java.util.*
 
 class InputGameController(private val view: View, private val texts: ResourceBundle) {
@@ -23,14 +25,16 @@ class InputGameController(private val view: View, private val texts: ResourceBun
         view.setTitle(texts.getString("app.setting_up"))
         view.setBoard(arbiter.currentPosition)
 
-        view.enterGameDetails(this::onGameDetailsEntered)
+        view.enterGameDetails("", this::onGameDetailsEntered)
     }
 
-    fun onGameDetailsEntered(white: String, black: String) {
-        arbiter.white = white
-        arbiter.black = black
+    fun onGameDetailsEntered(details: GameDetails) {
+        arbiter.white = details.white
+        arbiter.black = details.black
+        arbiter.event = details.event
+        arbiter.date = details.date
 
-        view.setTitle("Entering ${white} - ${black}")
+        view.setTitle("Entering ${details.white} - ${details.black}")
         view.enableMovesOnBoard(this::onActionEntered)
         view.enableAcceptDraw(this::onActionEntered)
         view.enableResign(this::onActionEntered)
