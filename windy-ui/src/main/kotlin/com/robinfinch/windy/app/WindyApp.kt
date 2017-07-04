@@ -1,12 +1,9 @@
 package com.robinfinch.windy.app
 
-import com.robinfinch.windy.ui.MainFrame
 import com.robinfinch.windy.ui.controller.InputGameController
 import com.robinfinch.windy.ui.controller.LocalPlayController
 import com.robinfinch.windy.ui.controller.View
-import java.util.*
 import javax.inject.Inject
-import javax.swing.JMenuItem
 import javax.swing.SwingUtilities
 import javax.swing.UIManager
 
