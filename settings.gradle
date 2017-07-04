@@ -1,0 +1,5 @@
+rootProject.name = 'windy'
+include 'windy-core'
+include 'windy-db'
+include 'windy-ui'
+

@@ -2,14 +2,17 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile default="true" name="Default" enabled="true">
-        <processorPath useClasspath="false" />
-      </profile>
-      <profile name="Dagger" enabled="true">
-        <processorPath useClasspath="false">
-          <entry name="$PROJECT_DIR$/lib/dagger-2.11.jar" />
-        </processorPath>
-      </profile>
+      <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="windy-core_main" target="1.8" />
+      <module name="windy-core_test" target="1.8" />
+      <module name="windy-db_main" target="1.8" />
+      <module name="windy-db_test" target="1.8" />
+      <module name="windy-ui_main" target="1.8" />
+      <module name="windy-ui_test" target="1.8" />
+      <module name="windy_main" target="1.8" />
+      <module name="windy_test" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -29,7 +29,7 @@ class WindyApp {
     lateinit var texts: ResourceBundle
 
     init {
-        DaggerAppComponent.inject(this)
+        DaggerAppComponent.builder().build().inject(this)
 
         frame = MainFrame(texts, this::onStartLocalPlay, this::onStartInputGame)
 

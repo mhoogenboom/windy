@@ -2,10 +2,18 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/windy.iml" filepath="$PROJECT_DIR$/windy.iml" />
-      <module fileurl="file://$PROJECT_DIR$/windy-core/windy-core.iml" filepath="$PROJECT_DIR$/windy-core/windy-core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/windy-db/windy-db.iml" filepath="$PROJECT_DIR$/windy-db/windy-db.iml" />
-      <module fileurl="file://$PROJECT_DIR$/windy-ui/windy-ui.iml" filepath="$PROJECT_DIR$/windy-ui/windy-ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/windy.iml" filepath="$PROJECT_DIR$/.idea/modules/windy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/windy-core/windy-core.iml" filepath="$PROJECT_DIR$/.idea/modules/windy-core/windy-core.iml" group="windy-core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/windy-core_main.iml" filepath="$PROJECT_DIR$/.idea/modules/windy-core_main.iml" group="windy-core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/windy-core_test.iml" filepath="$PROJECT_DIR$/.idea/modules/windy-core_test.iml" group="windy-core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/windy-db/windy-db.iml" filepath="$PROJECT_DIR$/.idea/modules/windy-db/windy-db.iml" group="windy-db" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/windy-db/windy-db_main.iml" filepath="$PROJECT_DIR$/.idea/modules/windy-db/windy-db_main.iml" group="windy-db" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/windy-db/windy-db_test.iml" filepath="$PROJECT_DIR$/.idea/modules/windy-db/windy-db_test.iml" group="windy-db" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/windy-ui.iml" filepath="$PROJECT_DIR$/.idea/modules/windy-ui.iml" group="windy-ui" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1716124521/windy-ui_main.iml" filepath="$PROJECT_DIR$/.idea/modules/1716124521/windy-ui_main.iml" group="windy-ui" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1716124521/windy-ui_test.iml" filepath="$PROJECT_DIR$/.idea/modules/1716124521/windy-ui_test.iml" group="windy-ui" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/windy_main.iml" filepath="$PROJECT_DIR$/.idea/modules/windy_main.iml" group="windy" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/windy_test.iml" filepath="$PROJECT_DIR$/.idea/modules/windy_test.iml" group="windy" />
     </modules>
   </component>
 </project>
