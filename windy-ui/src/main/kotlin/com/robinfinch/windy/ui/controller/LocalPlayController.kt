@@ -21,7 +21,7 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
     private var whiteHasTheBoard: Boolean = true
 
     fun attachToMenu(): JMenuItem {
-        val menuItem = JMenuItem(texts.getString("app.menu_local_play"))
+        val menuItem = JMenuItem(texts.getString("local_play.menu"))
         menuItem.addActionListener { onStart() }
         return menuItem
     }
@@ -31,7 +31,7 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
 
         arbiter.setupGame()
 
-        view.setTitle(texts.getString("app.setting_up"))
+        view.setTitle(texts.getString("local_play.setting_up"))
         view.setBoard(arbiter.currentPosition, false)
 
         view.enterGameDetails(LocalDate.now().toString(), this::onGameDetailsEntered)
@@ -85,21 +85,21 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
                 view.enableAcceptDraw(if (arbiter.drawProposed) this::onActionEntered else null)
 
                 val player = if (whiteHasTheBoard) arbiter.white else arbiter.black
-                view.showMessage(texts.getString("play.has_the_board", player))
+                view.showMessage(texts.getString("local_play.has_the_board", player))
             }
 
             Game.Result.WHITE_WIN -> {
-                view.showMessage(texts.getString("play.win", arbiter.white))
+                view.showMessage(texts.getString("local_play.win", arbiter.white))
                 saveGame()
             }
 
             Game.Result.BLACK_WIN -> {
-                view.showMessage(texts.getString("play.win", arbiter.black))
+                view.showMessage(texts.getString("local_play.win", arbiter.black))
                 saveGame()
             }
 
             Game.Result.DRAW -> {
-                view.showMessage(texts.getString("play.draw"))
+                view.showMessage(texts.getString("local_play.draw"))
                 saveGame()
             }
         }
@@ -113,6 +113,7 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
 
         arbiter.saveGame(db)
 
+        view.setTitle(texts.getString("app.welcome"))
         view.setBoard(Position(), false)
         view.setHistory("")
         view.enableMenu(true)

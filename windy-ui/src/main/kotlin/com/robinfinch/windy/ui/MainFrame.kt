@@ -107,6 +107,8 @@ class MainFrame(private val texts: ResourceBundle) : View {
 
     override fun show(vararg plugins: JMenuItem) {
 
+        setTitle(texts.getString("app.welcome"))
+
         for (plugin in plugins) {
             menu.add(plugin)
         }
@@ -221,5 +223,5 @@ fun JButton.enableWithActionListener(listener: (ActionEvent) -> Unit) {
     isEnabled = true
 }
 
-fun ResourceBundle.getString(key: String, vararg params: String): String =
+fun ResourceBundle.getString(key: String, vararg params: Any): String =
         MessageFormat.format(getString(key), *params)

@@ -24,4 +24,9 @@ class ControllersModule {
     fun providesInputGameController(view: View, texts: ResourceBundle, db: Database)
             = InputGameController(view, texts, db)
 
+    @Provides
+    @Singleton
+    fun providesImportGamesController(view: View, texts: ResourceBundle, db: Database)
+            = ImportGamesController(view, texts, db)
+
 }

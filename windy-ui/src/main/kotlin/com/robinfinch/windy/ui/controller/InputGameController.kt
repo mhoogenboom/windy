@@ -19,7 +19,7 @@ class InputGameController(private val view: View, private val texts: ResourceBun
     private var whiteHasTheBoard: Boolean = true
 
     fun attachToMenu(): JMenuItem {
-        val menuItem = JMenuItem(texts.getString("app.menu_input_game"))
+        val menuItem = JMenuItem(texts.getString("input_game.menu"))
         menuItem.addActionListener { onStart() }
         return menuItem
     }
@@ -29,7 +29,7 @@ class InputGameController(private val view: View, private val texts: ResourceBun
 
         arbiter.setupGame()
 
-        view.setTitle(texts.getString("app.setting_up"))
+        view.setTitle(texts.getString("input_game.setting_up"))
         view.setBoard(arbiter.currentPosition)
 
         view.enterGameDetails("", this::onGameDetailsEntered)
@@ -41,7 +41,7 @@ class InputGameController(private val view: View, private val texts: ResourceBun
         arbiter.event = details.event
         arbiter.date = details.date
 
-        view.setTitle("Entering ${details.white} - ${details.black}")
+        view.setTitle("${details.white} - ${details.black}")
         view.enableMovesOnBoard(this::onActionEntered)
         view.enableAcceptDraw(this::onActionEntered)
         view.enableResign(this::onActionEntered)
@@ -92,6 +92,7 @@ class InputGameController(private val view: View, private val texts: ResourceBun
 
         arbiter.saveGame(db)
 
+        view.setTitle(texts.getString("app.welcome"))
         view.setBoard(Position(), false)
         view.setHistory("")
         view.enableMenu(true)

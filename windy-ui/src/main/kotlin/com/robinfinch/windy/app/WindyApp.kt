@@ -1,5 +1,6 @@
 package com.robinfinch.windy.app
 
+import com.robinfinch.windy.ui.controller.ImportGamesController
 import com.robinfinch.windy.ui.controller.InputGameController
 import com.robinfinch.windy.ui.controller.LocalPlayController
 import com.robinfinch.windy.ui.controller.View
@@ -25,6 +26,9 @@ class WindyApp {
     lateinit var inputGameController: InputGameController
 
     @Inject
+    lateinit var importGamesController: ImportGamesController
+
+    @Inject
     lateinit var frame: View
 
     init {
@@ -32,6 +36,9 @@ class WindyApp {
     }
 
     fun start() {
-        frame.show(localPlayController.attachToMenu(), inputGameController.attachToMenu())
+        frame.show(
+                localPlayController.attachToMenu(),
+                inputGameController.attachToMenu(),
+                importGamesController.attachToMenu())
     }
 }
