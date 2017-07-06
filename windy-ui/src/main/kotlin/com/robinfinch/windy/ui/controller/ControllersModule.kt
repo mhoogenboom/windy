@@ -26,6 +26,11 @@ class ControllersModule {
 
     @Provides
     @Singleton
+    fun providesReplayGamesController(view: View, texts: ResourceBundle, db: Database)
+            = ReplayGamesController(view, texts, db)
+
+    @Provides
+    @Singleton
     fun providesImportGamesController(view: View, texts: ResourceBundle, db: Database)
             = ImportGamesController(view, texts, db)
 

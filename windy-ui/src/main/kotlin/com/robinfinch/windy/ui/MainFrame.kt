@@ -1,26 +1,27 @@
 package com.robinfinch.windy.ui
 
 import com.robinfinch.windy.core.board.Board
-import com.robinfinch.windy.core.game.AcceptDraw
-import com.robinfinch.windy.core.game.ExecuteMove
-import com.robinfinch.windy.core.game.Resign
+import com.robinfinch.windy.core.game.*
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.ui.controller.View
-import java.awt.Dimension
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.awt.Insets
+import java.awt.*
 import java.awt.event.ActionEvent
 import java.io.File
 import java.text.MessageFormat
 import java.util.*
 import javax.swing.*
+import javax.swing.DefaultListModel
+import javax.swing.event.ListSelectionEvent
 
 class MainFrame(private val texts: ResourceBundle) : View {
 
     private val frame: JFrame
 
     private val menu: JMenu
+
+    private val gamesList: JList<Game>
+
+    private val games: DefaultListModel<Game>
 
     private val board: Board
 
@@ -32,6 +33,8 @@ class MainFrame(private val texts: ResourceBundle) : View {
     private val proposeDrawField: JCheckBox
 
     private val gameDetailsDialog: GameDetailsDialog
+
+    private val searchGamesDialog: SearchGamesDialog
 
     init {
         frame = JFrame()
@@ -45,13 +48,27 @@ class MainFrame(private val texts: ResourceBundle) : View {
 
         val gbc = GridBagConstraints()
 
-        board = Board()
-        board.style = Board.Style()
+        games = DefaultListModel<Game>()
+
+        gamesList = JList<Game>(games)
+        gamesList.selectionMode = ListSelectionModel.SINGLE_INTERVAL_SELECTION
+        gamesList.isFocusable = false
+
+        val listScroller = JScrollPane(gamesList)
+        listScroller.preferredSize = Dimension(100, 0)
 
         gbc.gridy = 0
         gbc.gridheight = 4
         gbc.gridx = 0
-        gbc.insets = Insets(0, 120, 0, 0)
+        gbc.fill = GridBagConstraints.BOTH
+        gbc.insets = Insets(10, 10, 0, 10)
+        frame.add(listScroller, gbc)
+
+        board = Board()
+        board.style = Board.Style()
+
+        gbc.gridx++
+        gbc.insets = Insets(10, 0, 0, 0)
         frame.add(board, gbc)
 
         history = JTextPane()
@@ -65,8 +82,7 @@ class MainFrame(private val texts: ResourceBundle) : View {
 
         gbc.gridheight = 1
         gbc.weighty = 1.0
-        gbc.gridx = 1
-        gbc.fill = GridBagConstraints.BOTH
+        gbc.gridx++
         gbc.insets = Insets(10, 10, 0, 10)
         frame.add(sp, gbc)
 
@@ -94,15 +110,17 @@ class MainFrame(private val texts: ResourceBundle) : View {
         proposeDrawField.isEnabled = false
 
         gbc.gridy = 4
-        gbc.gridx = 0
+        gbc.gridx = 1
         gbc.fill = GridBagConstraints.NONE
-        gbc.insets = Insets(10, 120, 10, 0)
+        gbc.insets = Insets(10, 0, 10, 0)
         frame.add(proposeDrawField, gbc)
 
         frame.pack()
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
         gameDetailsDialog = GameDetailsDialog(frame, texts)
+
+        searchGamesDialog = SearchGamesDialog(frame, texts)
     }
 
     override fun show(vararg plugins: JMenuItem) {
@@ -122,6 +140,20 @@ class MainFrame(private val texts: ResourceBundle) : View {
 
     override fun enableMenu(enabled: Boolean) {
         menu.isEnabled = enabled
+    }
+
+    override fun setGames(games: List<Game>) {
+        for (game in games) {
+            this.games.addElement(game)
+        }
+    }
+
+    override fun enableSelectGame(onGameSelected: (Game) -> Unit) {
+        gamesList.enableWithSelectionListener {e ->
+            if (!e.valueIsAdjusting) {
+                onGameSelected(gamesList.selectedValue)
+            }
+        }
     }
 
     override fun setBoard(position: Position, upsideDown: Boolean) {
@@ -176,8 +208,14 @@ class MainFrame(private val texts: ResourceBundle) : View {
     }
 
     override fun enterGameDetails(date: String, onGameDetailsEntered: (GameDetails) -> Unit) {
+
         gameDetailsDialog.initialiseDate(date)
         gameDetailsDialog.show(onGameDetailsEntered)
+    }
+
+    override fun enterSearchCriteria(onSearchCriteriaEntered: (Query) -> Unit) {
+
+        searchGamesDialog.show(onSearchCriteriaEntered)
     }
 
     override fun showMessage(message: String) {
@@ -207,6 +245,20 @@ class MainFrame(private val texts: ResourceBundle) : View {
         else
             null
     }
+}
+
+fun <T> JList<T>.disableWithoutSelectionListener() {
+    if (isFocusable) {
+        isFocusable = false
+        removeListSelectionListener(listSelectionListeners[0])
+    }
+}
+
+fun <T> JList<T>.enableWithSelectionListener(listener: (ListSelectionEvent) -> Unit) {
+    disableWithoutSelectionListener()
+
+    addListSelectionListener(listener)
+    isFocusable = true
 }
 
 fun JButton.disableWithoutActionListener() {

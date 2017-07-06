@@ -6,7 +6,11 @@ interface Storage {
 
     fun store(game: Game)
 
-    fun findByPlayer(name: String, includeWhite: Boolean = true, includeBlack: Boolean = true): List<Game>
+    fun findByPlayer(query: Query): List<Game>
 
     fun findByPosition(position: Position): List<Game>
+}
+
+class Query(val player: String, val withWhite: Boolean = true, val withBlack: Boolean = true) {
+
 }

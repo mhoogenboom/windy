@@ -1,6 +1,7 @@
 package com.robinfinch.windy.db
 
 import com.robinfinch.windy.core.game.Game
+import com.robinfinch.windy.core.game.Query
 import com.robinfinch.windy.core.game.Storage
 import com.robinfinch.windy.core.position.Position
 import java.io.*
@@ -44,15 +45,15 @@ class Database(private val dataDir: File) : Storage {
         }
     }
 
-    override fun findByPlayer(name: String, includeWhite: Boolean, includeBlack: Boolean): List<Game> {
+    override fun findByPlayer(query: Query): List<Game> {
 
         val games = mutableListOf<Game>()
 
-        val gamesPlayed = playerIndex.find(name)
-        if (includeWhite) {
+        val gamesPlayed = playerIndex.find(query.player)
+        if (query.withWhite) {
             games.addAll(gamesPlayed.withWhite.map(this::loadGame))
         }
-        if (includeBlack) {
+        if (query.withBlack) {
             games.addAll(gamesPlayed.withBlack.map(this::loadGame))
         }
 

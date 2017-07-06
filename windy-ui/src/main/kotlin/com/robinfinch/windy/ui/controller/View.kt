@@ -1,6 +1,8 @@
 package com.robinfinch.windy.ui.controller
 
 import com.robinfinch.windy.core.game.Action
+import com.robinfinch.windy.core.game.Game
+import com.robinfinch.windy.core.game.Query
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.ui.GameDetails
 import java.io.File
@@ -13,6 +15,10 @@ interface View {
     fun setTitle(title: String)
 
     fun enableMenu(enabled: Boolean)
+
+    fun setGames(games: List<Game>)
+
+    fun enableSelectGame(onGameSelected: (Game) -> Unit)
 
     fun setBoard(position: Position, upsideDown: Boolean = false)
 
@@ -27,6 +33,8 @@ interface View {
     fun enableResign(onActionEntered: ((Action) -> Boolean)?)
 
     fun enterGameDetails(date: String, onGameDetailsEntered: (GameDetails) -> Unit)
+
+    fun enterSearchCriteria(onSearchCriteriaEntered: (Query) -> Unit)
 
     fun showMessage(message: String)
 
