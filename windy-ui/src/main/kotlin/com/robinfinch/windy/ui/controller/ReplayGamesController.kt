@@ -4,6 +4,8 @@ import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.core.text.format
 import com.robinfinch.windy.db.Database
+import com.robinfinch.windy.ui.edt
+import io.reactivex.schedulers.Schedulers
 import java.io.BufferedWriter
 import java.io.StringWriter
 import java.util.*
@@ -27,15 +29,15 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
         view.enableMenu(false)
 
         view.enterSearchCriteria { query ->
-            val games = db.findByPlayer(query)
-            start(games)
+            db.findByPlayer(query)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(edt())
+                    .subscribe(this::start)
         }
     }
 
     fun start(games: List<Game>) {
-
         view.setGames(games)
-
         view.enableSelectGame(this::onGameSelected)
     }
 

@@ -4,6 +4,7 @@ import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.game.Query
 import com.robinfinch.windy.core.game.Storage
 import com.robinfinch.windy.core.position.Position
+import io.reactivex.Observable
 import java.io.*
 
 class Database(private val dataDir: File) : Storage {
@@ -27,43 +28,47 @@ class Database(private val dataDir: File) : Storage {
                 }
     }
 
-    override fun store(game: Game) {
+    override fun store(game: Game) =
 
-        storeGame(game)
+        Observable.fromCallable {
+            storeGame(game)
 
-        playerIndex.insert(game.white, game.black, id)
+            playerIndex.insert(game.white, game.black, id)
 
-        val position = Position()
-        position.start()
+            val position = Position()
+            position.start()
 
-        // skip the start position
+            // skip the start position
 
-        for (move in game.moves()) {
-            position.execute(move)
+            for (move in game.moves()) {
+                position.execute(move)
 
-            positionIndex.insert(position, id)
-        }
-    }
-
-    override fun findByPlayer(query: Query): List<Game> {
-
-        val games = mutableListOf<Game>()
-
-        val gamesPlayed = playerIndex.find(query.player)
-        if (query.withWhite) {
-            games.addAll(gamesPlayed.withWhite.map(this::loadGame))
-        }
-        if (query.withBlack) {
-            games.addAll(gamesPlayed.withBlack.map(this::loadGame))
+                positionIndex.insert(position, id)
+            }
         }
 
-        return games
-    }
+    override fun findByPlayer(query: Query): Observable<List<Game>> =
 
-    override fun findByPosition(position: Position): List<Game> {
+        Observable.fromCallable {
 
-        return positionIndex.find(position).map(this::loadGame)
-    }
+            val games = mutableListOf<Game>()
+
+            val gamesPlayed = playerIndex.find(query.player)
+            if (query.withWhite) {
+                games.addAll(gamesPlayed.withWhite.map(this::loadGame))
+            }
+            if (query.withBlack) {
+                games.addAll(gamesPlayed.withBlack.map(this::loadGame))
+            }
+
+            games
+        }
+
+    override fun findByPosition(position: Position): Observable<List<Game>> =
+
+        Observable.fromCallable {
+            positionIndex.find(position).map(this::loadGame)
+        }
 
     private fun loadGame(id: Long): Game {
 

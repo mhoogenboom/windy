@@ -146,7 +146,5 @@ class Arbiter {
         state = State.FINISHED
     }
 
-    fun saveGame(storage: Storage) {
-        storage.store(game)
-    }
+    fun saveGame(storage: Storage) = storage.store(game)
 }

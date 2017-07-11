@@ -7,6 +7,8 @@ import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.core.text.format
 import com.robinfinch.windy.db.Database
 import com.robinfinch.windy.ui.GameDetails
+import com.robinfinch.windy.ui.edt
+import io.reactivex.schedulers.Schedulers
 import java.io.BufferedWriter
 import java.io.StringWriter
 import java.util.*
@@ -92,10 +94,13 @@ class InputGameController(private val view: View, private val texts: ResourceBun
         view.enableResign(null)
 
         arbiter.saveGame(db)
-
-        view.setGames(emptyList())
-        view.setBoard(Position())
-        view.setHistory("")
-        view.enableMenu(true)
+                .subscribeOn(Schedulers.io())
+                .observeOn(edt())
+                .subscribe {
+                    view.setGames(emptyList())
+                    view.setBoard(Position())
+                    view.setHistory("")
+                    view.enableMenu(true)
+                }
     }
 }

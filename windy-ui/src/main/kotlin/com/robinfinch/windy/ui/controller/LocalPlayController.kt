@@ -7,7 +7,9 @@ import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.core.text.format
 import com.robinfinch.windy.db.Database
 import com.robinfinch.windy.ui.GameDetails
+import com.robinfinch.windy.ui.edt
 import com.robinfinch.windy.ui.getString
+import io.reactivex.schedulers.Schedulers
 import java.io.BufferedWriter
 import java.io.StringWriter
 import java.time.LocalDate
@@ -112,10 +114,13 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
         view.showMessage(message)
 
         arbiter.saveGame(db)
-
-        view.setGames(emptyList())
-        view.setBoard(Position())
-        view.setHistory("")
-        view.enableMenu(true)
+                .subscribeOn(Schedulers.io())
+                .observeOn(edt())
+                .subscribe {
+                    view.setGames(emptyList())
+                    view.setBoard(Position())
+                    view.setHistory("")
+                    view.enableMenu(true)
+                }
     }
 }
