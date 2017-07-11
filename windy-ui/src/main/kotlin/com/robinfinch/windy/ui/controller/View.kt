@@ -12,13 +12,11 @@ interface View {
 
     fun show(vararg plugins: JMenuItem)
 
-    fun setTitle(title: String)
-
     fun enableMenu(enabled: Boolean)
 
     fun setGames(games: List<Game>)
 
-    fun enableSelectGame(onGameSelected: (Game) -> Unit)
+    fun enableSelectGame(onGameSelected: ((Game) -> Unit)?)
 
     fun setBoard(position: Position, upsideDown: Boolean = false)
 

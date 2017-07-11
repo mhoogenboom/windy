@@ -6,17 +6,17 @@ import com.robinfinch.windy.ui.getString
 import java.util.*
 import javax.swing.JMenuItem
 
-class ImportGamesController(private val view: View, private val texts: ResourceBundle, private val db: Database) {
+class ImportGamesController(private val view: View, private val texts: ResourceBundle, private val db: Database,
+                            private val replayGamesController: ReplayGamesController) {
 
     fun attachToMenu(): JMenuItem {
         val menuItem = JMenuItem(texts.getString("import_games.menu"))
-        menuItem.addActionListener { onStart() }
+        menuItem.addActionListener { start() }
         return menuItem
     }
 
-    fun onStart() {
+    fun start() {
         view.enableMenu(false)
-        view.setTitle(texts.getString("import_games.title"))
 
         val file = view.showOpenDialog()
         if (file != null) {
@@ -26,10 +26,7 @@ class ImportGamesController(private val view: View, private val texts: ResourceB
                 db.store(game)
             }
 
-            view.showMessage(texts.getString("import_games.done", games.size))
+            replayGamesController.start(games)
         }
-
-        view.setTitle(texts.getString("app.welcome"))
-        view.enableMenu(true)
     }
 }

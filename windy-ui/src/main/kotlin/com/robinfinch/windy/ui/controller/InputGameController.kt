@@ -20,28 +20,27 @@ class InputGameController(private val view: View, private val texts: ResourceBun
 
     fun attachToMenu(): JMenuItem {
         val menuItem = JMenuItem(texts.getString("input_game.menu"))
-        menuItem.addActionListener { onStart() }
+        menuItem.addActionListener { start() }
         return menuItem
     }
 
-    fun onStart() {
+    private fun start() {
         view.enableMenu(false)
-
-        arbiter.setupGame()
-
-        view.setTitle(texts.getString("input_game.setting_up"))
-        view.setBoard(arbiter.currentPosition)
 
         view.enterGameDetails("", this::onGameDetailsEntered)
     }
 
-    fun onGameDetailsEntered(details: GameDetails) {
+    private fun onGameDetailsEntered(details: GameDetails) {
+
+        arbiter.setupGame()
         arbiter.white = details.white
         arbiter.black = details.black
         arbiter.event = details.event
         arbiter.date = details.date
 
-        view.setTitle("${details.white} - ${details.black}")
+        view.setGames(listOf(arbiter.currentGame))
+        view.setBoard(arbiter.currentPosition)
+
         view.enableMovesOnBoard(this::onActionEntered)
         view.enableAcceptDraw(this::onActionEntered)
         view.enableResign(this::onActionEntered)
@@ -73,18 +72,20 @@ class InputGameController(private val view: View, private val texts: ResourceBun
 
     private fun play() {
 
-        if (arbiter.result == Game.Result.UNKNOWN) {
+        val game = arbiter.currentGame
+
+        if (game.result == Game.Result.UNKNOWN) {
             val history = StringWriter()
-            BufferedWriter(history).use { out -> arbiter.history.format(out, html = true) }
+            BufferedWriter(history).use { out -> game.moves().format(out, html = true) }
 
             view.setBoard(arbiter.currentPosition)
             view.setHistory(history.toString())
         } else {
-            saveGame()
+            finish()
         }
     }
 
-    private fun saveGame() {
+    private fun finish() {
 
         view.enableMovesOnBoard(null)
         view.enableAcceptDraw(null)
@@ -92,8 +93,8 @@ class InputGameController(private val view: View, private val texts: ResourceBun
 
         arbiter.saveGame(db)
 
-        view.setTitle(texts.getString("app.welcome"))
-        view.setBoard(Position(), false)
+        view.setGames(emptyList())
+        view.setBoard(Position())
         view.setHistory("")
         view.enableMenu(true)
     }

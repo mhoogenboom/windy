@@ -24,4 +24,6 @@ class Game() : Serializable {
     fun move(number: Int) = history.getOrNull(number)
 
     fun moves() = ArrayList<Move>(history)
+
+    fun copy() = this // todo
 }

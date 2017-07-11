@@ -61,14 +61,11 @@ class Arbiter {
     val currentPosition
         get() = position.copy()
 
-    val history
-        get() = game.moves()
+    val currentGame
+        get() = game.copy()
 
     val drawProposed
         get() = (state == State.DRAW_PROPOSED)
-
-    val result
-        get() = game.result
 
     fun acceptWhite(action: Action): Boolean {
 

@@ -19,33 +19,35 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
 
     fun attachToMenu(): JMenuItem {
         val menuItem = JMenuItem(texts.getString("replay_games.menu"))
-        menuItem.addActionListener { onStart() }
+        menuItem.addActionListener { start() }
         return menuItem
     }
 
-    fun onStart() {
-        view.setTitle(texts.getString("replay_games.setting_up"))
+    private fun start() {
+        view.enableMenu(false)
 
-        view.enterSearchCriteria {query ->
+        view.enterSearchCriteria { query ->
             val games = db.findByPlayer(query)
-            view.setGames(games)
-
-            view.enableSelectGame(this::onGameSelected)
+            start(games)
         }
+    }
+
+    fun start(games: List<Game>) {
+
+        view.setGames(games)
+
+        view.enableSelectGame(this::onGameSelected)
     }
 
     private fun onGameSelected(game: Game) {
 
         position.start()
 
-        view.setTitle("${game.white} - ${game.black} (${game.event}, ${game.date})")
-        view.enableMenu(false)
         view.enableNextMove(this::onNextMoveRequested)
 
         currentGame = game
         currentMove = 0
         play()
-
     }
 
     private fun onNextMoveRequested() {
@@ -67,8 +69,8 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
             view.enableNextMove(null)
             view.showMessage(message)
 
-            view.enableMenu(true)
-            view.setTitle(texts.getString("replay_games.setting_up"))
+            view.setBoard(Position())
+            view.setHistory("")
         }
     }
 

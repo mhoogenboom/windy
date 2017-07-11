@@ -22,28 +22,27 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
 
     fun attachToMenu(): JMenuItem {
         val menuItem = JMenuItem(texts.getString("local_play.menu"))
-        menuItem.addActionListener { onStart() }
+        menuItem.addActionListener { start() }
         return menuItem
     }
 
-    fun onStart() {
+    private fun start() {
         view.enableMenu(false)
-
-        arbiter.setupGame()
-
-        view.setTitle(texts.getString("local_play.setting_up"))
-        view.setBoard(arbiter.currentPosition, false)
 
         view.enterGameDetails(LocalDate.now().toString(), this::onGameDetailsEntered)
     }
 
-    fun onGameDetailsEntered(details: GameDetails) {
+    private fun onGameDetailsEntered(details: GameDetails) {
+
+        arbiter.setupGame()
         arbiter.white = details.white
         arbiter.black = details.black
         arbiter.event = details.event
         arbiter.date = details.date
 
-        view.setTitle("${arbiter.white} - ${arbiter.black}")
+        view.setGames(listOf(arbiter.currentGame))
+        view.setBoard(arbiter.currentPosition)
+
         view.enableMovesOnBoard(this::onActionEntered)
         view.enableResign(this::onActionEntered)
 
@@ -74,11 +73,13 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
 
     private fun play() {
 
-        when (arbiter.result) {
+        val game = arbiter.currentGame
+
+        when (game.result) {
 
             Game.Result.UNKNOWN -> {
                 val history = StringWriter()
-                BufferedWriter(history).use { out -> arbiter.history.format(out, html = true) }
+                BufferedWriter(history).use { out -> game.moves().format(out, html = true) }
 
                 view.setBoard(arbiter.currentPosition, !whiteHasTheBoard)
                 view.setHistory(history.toString())
@@ -89,32 +90,31 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
             }
 
             Game.Result.WHITE_WIN -> {
-                view.showMessage(texts.getString("local_play.win", arbiter.white))
-                saveGame()
+                finish(texts.getString("local_play.win", arbiter.white))
             }
 
             Game.Result.BLACK_WIN -> {
-                view.showMessage(texts.getString("local_play.win", arbiter.black))
-                saveGame()
+                finish(texts.getString("local_play.win", arbiter.black))
             }
 
             Game.Result.DRAW -> {
-                view.showMessage(texts.getString("local_play.draw"))
-                saveGame()
+                finish(texts.getString("local_play.draw"))
             }
         }
     }
 
-    private fun saveGame() {
+    private fun finish(message: String) {
 
         view.enableMovesOnBoard(null)
         view.enableAcceptDraw(null)
         view.enableResign(null)
 
+        view.showMessage(message)
+
         arbiter.saveGame(db)
 
-        view.setTitle(texts.getString("app.welcome"))
-        view.setBoard(Position(), false)
+        view.setGames(emptyList())
+        view.setBoard(Position())
         view.setHistory("")
         view.enableMenu(true)
     }

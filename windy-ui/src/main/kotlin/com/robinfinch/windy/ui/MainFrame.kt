@@ -4,14 +4,14 @@ import com.robinfinch.windy.core.board.Board
 import com.robinfinch.windy.core.game.*
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.ui.controller.View
-import java.awt.*
-import java.awt.event.ActionEvent
+import java.awt.Dimension
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import java.awt.Insets
 import java.io.File
-import java.text.MessageFormat
 import java.util.*
 import javax.swing.*
-import javax.swing.DefaultListModel
-import javax.swing.event.ListSelectionEvent
+
 
 class MainFrame(private val texts: ResourceBundle) : View {
 
@@ -39,6 +39,7 @@ class MainFrame(private val texts: ResourceBundle) : View {
     init {
         frame = JFrame()
         frame.layout = GridBagLayout()
+        frame.title = texts.getString("app.title")
 
         menu = JMenu(texts.getString("app.menu_title"))
 
@@ -51,11 +52,11 @@ class MainFrame(private val texts: ResourceBundle) : View {
         games = DefaultListModel<Game>()
 
         gamesList = JList<Game>(games)
+        gamesList.cellRenderer = GameCellRenderer()
         gamesList.selectionMode = ListSelectionModel.SINGLE_INTERVAL_SELECTION
-        gamesList.isFocusable = false
 
         val listScroller = JScrollPane(gamesList)
-        listScroller.preferredSize = Dimension(100, 0)
+        listScroller.preferredSize = Dimension(200, 0)
 
         gbc.gridy = 0
         gbc.gridheight = 4
@@ -125,8 +126,6 @@ class MainFrame(private val texts: ResourceBundle) : View {
 
     override fun show(vararg plugins: JMenuItem) {
 
-        setTitle(texts.getString("app.welcome"))
-
         for (plugin in plugins) {
             menu.add(plugin)
         }
@@ -134,24 +133,26 @@ class MainFrame(private val texts: ResourceBundle) : View {
         frame.setVisible(true)
     }
 
-    override fun setTitle(title: String) {
-        frame.title = texts.getString("app.title", title)
-    }
-
     override fun enableMenu(enabled: Boolean) {
         menu.isEnabled = enabled
     }
 
     override fun setGames(games: List<Game>) {
+        this.games.clear()
+
         for (game in games) {
             this.games.addElement(game)
         }
     }
 
-    override fun enableSelectGame(onGameSelected: (Game) -> Unit) {
-        gamesList.enableWithSelectionListener {e ->
-            if (!e.valueIsAdjusting) {
-                onGameSelected(gamesList.selectedValue)
+    override fun enableSelectGame(onGameSelected: ((Game) -> Unit)?) {
+        if (onGameSelected == null) {
+            gamesList.disableWithoutSelectionListener()
+        } else {
+            gamesList.enableWithSelectionListener { e ->
+                if (!e.valueIsAdjusting) {
+                    onGameSelected(gamesList.selectedValue)
+                }
             }
         }
     }
@@ -246,34 +247,3 @@ class MainFrame(private val texts: ResourceBundle) : View {
             null
     }
 }
-
-fun <T> JList<T>.disableWithoutSelectionListener() {
-    if (isFocusable) {
-        isFocusable = false
-        removeListSelectionListener(listSelectionListeners[0])
-    }
-}
-
-fun <T> JList<T>.enableWithSelectionListener(listener: (ListSelectionEvent) -> Unit) {
-    disableWithoutSelectionListener()
-
-    addListSelectionListener(listener)
-    isFocusable = true
-}
-
-fun JButton.disableWithoutActionListener() {
-    if (isEnabled) {
-        isEnabled = false
-        removeActionListener(actionListeners[0])
-    }
-}
-
-fun JButton.enableWithActionListener(listener: (ActionEvent) -> Unit) {
-    disableWithoutActionListener()
-
-    addActionListener(listener)
-    isEnabled = true
-}
-
-fun ResourceBundle.getString(key: String, vararg params: Any): String =
-        MessageFormat.format(getString(key), *params)

@@ -17,7 +17,7 @@ class SearchGamesDialog(parent: JFrame, texts: ResourceBundle)
 
     private val withBlackField = JCheckBox()
 
-    var onSearchCriteriaEntered: (Query) -> Unit = {_ -> }
+    var onSearchCriteriaEntered: (Query) -> Unit = { _ -> }
 
     init {
         layout = GridBagLayout()
@@ -44,6 +44,8 @@ class SearchGamesDialog(parent: JFrame, texts: ResourceBundle)
         gbc.weightx = 0.3
         add(JLabel(texts.getString("search_games.with_white")), gbc)
 
+        withWhiteField.isSelected = true
+
         gbc.gridx = 1
         gbc.weightx = 0.7
         add(withWhiteField, gbc)
@@ -53,6 +55,8 @@ class SearchGamesDialog(parent: JFrame, texts: ResourceBundle)
         gbc.gridx = 0
         gbc.weightx = 0.3
         add(JLabel(texts.getString("search_games.with_black")), gbc)
+
+        withBlackField.isSelected = true
 
         gbc.gridx = 1
         gbc.weightx = 0.7
