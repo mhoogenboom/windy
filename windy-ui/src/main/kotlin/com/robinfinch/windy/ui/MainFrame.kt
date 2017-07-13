@@ -19,33 +19,31 @@ class MainFrame(private val texts: ResourceBundle) : View {
 
     private val menu: JMenu
 
-    private val gamesList: JList<Game>
-
     private val games: DefaultListModel<Game>
+    private val gamesList: JList<Game>
+    private val clearList: JButton
 
     private val board: Board
+    private val proposeDrawField: JCheckBox
 
     private val history: JTextPane
-
     private val nextMove: JButton
     private val acceptDraw: JButton
     private val resign: JButton
-    private val proposeDrawField: JCheckBox
 
     private val gameDetailsDialog: GameDetailsDialog
-
     private val searchGamesDialog: SearchGamesDialog
 
     init {
-        frame = JFrame()
-        frame.layout = GridBagLayout()
-        frame.title = texts.getString("app.title")
-
         menu = JMenu(texts.getString("app.menu_title"))
 
         val mb = JMenuBar()
         mb.add(menu)
+
+        frame = JFrame()
+        frame.title = texts.getString("app.title")
         frame.jMenuBar = mb
+        frame.layout = GridBagLayout()
 
         val gbc = GridBagConstraints()
 
@@ -58,19 +56,38 @@ class MainFrame(private val texts: ResourceBundle) : View {
         val listScroller = JScrollPane(gamesList)
         listScroller.preferredSize = Dimension(200, 0)
 
-        gbc.gridy = 0
-        gbc.gridheight = 4
         gbc.gridx = 0
+        gbc.gridy = 0
+        gbc.gridheight = 3
         gbc.fill = GridBagConstraints.BOTH
         gbc.insets = Insets(10, 10, 0, 10)
         frame.add(listScroller, gbc)
 
+        clearList = JButton(texts.getString("controls.clear_list"))
+        clearList.isEnabled = false
+
+        gbc.gridy = 3
+        gbc.gridheight = 1
+        gbc.fill = GridBagConstraints.HORIZONTAL
+        frame.add(clearList, gbc)
+
         board = Board()
         board.style = Board.Style()
 
-        gbc.gridx++
+        gbc.gridx = 1
+        gbc.gridy = 0
+        gbc.gridheight = 4
         gbc.insets = Insets(10, 0, 0, 0)
         frame.add(board, gbc)
+
+        proposeDrawField = JCheckBox(texts.getString("controls.propose_draw"))
+        proposeDrawField.isEnabled = false
+
+        gbc.gridy = 4
+        gbc.gridheight = 1
+        gbc.fill = GridBagConstraints.NONE
+        gbc.insets = Insets(10, 0, 10, 0)
+        frame.add(proposeDrawField, gbc)
 
         history = JTextPane()
         history.preferredSize = Dimension(100, 0)
@@ -78,14 +95,15 @@ class MainFrame(private val texts: ResourceBundle) : View {
         history.contentType = "text/html"
         history.isEditable = false
 
-        val sp = JScrollPane(history)
-        sp.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
+        val historyScroller = JScrollPane(history)
+        historyScroller.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
 
-        gbc.gridheight = 1
+        gbc.gridx = 2
+        gbc.gridy = 0
         gbc.weighty = 1.0
-        gbc.gridx++
+        gbc.fill = GridBagConstraints.BOTH
         gbc.insets = Insets(10, 10, 0, 10)
-        frame.add(sp, gbc)
+        frame.add(historyScroller, gbc)
 
         nextMove = JButton(texts.getString("controls.next_move"))
         nextMove.isEnabled = false
@@ -106,15 +124,6 @@ class MainFrame(private val texts: ResourceBundle) : View {
 
         gbc.gridy = 3
         frame.add(resign, gbc)
-
-        proposeDrawField = JCheckBox(texts.getString("controls.propose_draw"))
-        proposeDrawField.isEnabled = false
-
-        gbc.gridy = 4
-        gbc.gridx = 1
-        gbc.fill = GridBagConstraints.NONE
-        gbc.insets = Insets(10, 0, 10, 0)
-        frame.add(proposeDrawField, gbc)
 
         frame.pack()
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
@@ -145,14 +154,18 @@ class MainFrame(private val texts: ResourceBundle) : View {
         }
     }
 
-    override fun enableSelectGame(onGameSelected: ((Game) -> Unit)?) {
+    override fun enableSelectGame(onGameSelected: ((ListSelection<Game>) -> Unit)?) {
         if (onGameSelected == null) {
             gamesList.disableWithoutSelectionListener()
+            clearList.disableWithoutActionListener()
         } else {
             gamesList.enableWithSelectionListener { e ->
-                if (!e.valueIsAdjusting) {
-                    onGameSelected(gamesList.selectedValue)
+                if (!e.valueIsAdjusting && (gamesList.selectedValue != null)) {
+                    onGameSelected(Selected(gamesList.selectedValue))
                 }
+            }
+            clearList.enableWithActionListener {
+                onGameSelected(Clear<Game>())
             }
         }
     }

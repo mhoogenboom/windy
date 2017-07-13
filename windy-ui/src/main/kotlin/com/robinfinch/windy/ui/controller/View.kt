@@ -5,6 +5,7 @@ import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.game.Query
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.ui.GameDetails
+import com.robinfinch.windy.ui.ListSelection
 import java.io.File
 import javax.swing.JMenuItem
 
@@ -16,7 +17,7 @@ interface View {
 
     fun setGames(games: List<Game>)
 
-    fun enableSelectGame(onGameSelected: ((Game) -> Unit)?)
+    fun enableSelectGame(onGameSelected: ((ListSelection<Game>) -> Unit)?)
 
     fun setBoard(position: Position, upsideDown: Boolean = false)
 

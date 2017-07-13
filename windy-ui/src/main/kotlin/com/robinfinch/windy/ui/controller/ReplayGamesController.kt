@@ -4,6 +4,9 @@ import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.core.text.format
 import com.robinfinch.windy.db.Database
+import com.robinfinch.windy.ui.Clear
+import com.robinfinch.windy.ui.ListSelection
+import com.robinfinch.windy.ui.Selected
 import com.robinfinch.windy.ui.edt
 import io.reactivex.schedulers.Schedulers
 import java.io.BufferedWriter
@@ -41,15 +44,28 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
         view.enableSelectGame(this::onGameSelected)
     }
 
-    private fun onGameSelected(game: Game) {
+    private fun onGameSelected(selection: ListSelection<Game>) {
 
-        position.start()
+        when {
+            selection is Selected<Game> -> {
 
-        view.enableNextMove(this::onNextMoveRequested)
+                position.start()
 
-        currentGame = game
-        currentMove = 0
-        play()
+                view.enableSelectGame(null)
+                view.enableNextMove(this::onNextMoveRequested)
+
+                currentGame = selection.item
+                currentMove = 0
+                play()
+            }
+
+            selection is Clear<Game> -> {
+
+                view.setGames(emptyList())
+                view.enableSelectGame(null)
+                view.enableMenu(true)
+            }
+        }
     }
 
     private fun onNextMoveRequested() {
@@ -73,6 +89,7 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
 
             view.setBoard(Position())
             view.setHistory("")
+            view.enableSelectGame(this::onGameSelected)
         }
     }
 
