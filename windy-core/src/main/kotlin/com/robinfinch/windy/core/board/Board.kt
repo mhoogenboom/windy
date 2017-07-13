@@ -3,14 +3,13 @@ package com.robinfinch.windy.core.board
 import com.robinfinch.windy.core.position.Generator
 import com.robinfinch.windy.core.position.Move
 import com.robinfinch.windy.core.position.Position
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.Graphics
+import java.awt.*
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.awt.event.MouseMotionListener
 import java.util.*
 import javax.swing.JPanel
+
 
 class Board : JPanel() {
 
@@ -29,7 +28,7 @@ class Board : JPanel() {
     var style = Style()
         set(style) {
             field = style
-            minimumSize = Dimension(10 * style.squareSize, 10 * style.squareSize)
+            minimumSize = Dimension(10 * style.squareSize, 11 * style.squareSize)
             repaint()
         }
 
@@ -46,43 +45,79 @@ class Board : JPanel() {
             repaint()
         }
 
-    var onMoveEntered: (List<Move>) -> Boolean = { false }
+    fun enableSettingUp() {
+        handler.enableSettingUp()
+    }
+
+    fun enableMoves(onMoveEntered: (List<Move>) -> Boolean) {
+        handler.enableMoves(onMoveEntered)
+    }
+
+    fun disableBoard() {
+        handler.disable()
+    }
 
     private class MouseHandler(private val board: Board) : MouseListener, MouseMotionListener {
 
+        enum class Mode {
+            SETTING_UP, MOVING, DISABLED
+        }
+
+        var mode: Mode = Mode.DISABLED
+
+        fun enableSettingUp() {
+            this.mode = Mode.SETTING_UP
+            this.onMoveEntered = { false }
+        }
+
+        fun enableMoves(onMoveEntered: (List<Move>) -> Boolean) {
+            this.mode = Mode.MOVING
+            this.onMoveEntered = onMoveEntered
+        }
+
+        fun disable() {
+            this.mode = Mode.DISABLED
+            this.onMoveEntered = { false }
+        }
+
+        private var onMoveEntered: (List<Move>) -> Boolean = { false }
+
         var validMoves: List<Move> = emptyList()
 
-        var moveX: Int = -1
+        var cursorX: Int = 0
+            private set
 
-        var moveY: Int = -1
+        var cursorY: Int = 0
+            private set
 
-        var moveStart: Int? = null
+        var cursorStart: Int = 0
+            private set
 
-        val moveSteps = Stack<Int>()
+        val cursorSteps = Stack<Int>()
 
         override fun mousePressed(e: MouseEvent?) {
 
             if (e != null) {
-                moveX = e.x
-                moveY = e.y
+                cursorX = e.x
+                cursorY = e.y
                 startMove();
             }
         }
 
         override fun mouseDragged(e: MouseEvent?) {
 
-            if ((e != null) && (moveStart != null)) {
-                moveX = e.x
-                moveY = e.y
+            if ((e != null) && (cursorStart != 0)) {
+                cursorX = e.x
+                cursorY = e.y
                 continueMove();
             }
         }
 
         override fun mouseReleased(e: MouseEvent?) {
 
-            if ((e != null) && (moveStart != null)) {
-                moveX = e.x
-                moveY = e.y
+            if ((e != null) && (cursorStart != 0)) {
+                cursorX = e.x
+                cursorY = e.y
                 finishMove()
             }
         }
@@ -93,9 +128,9 @@ class Board : JPanel() {
 
         override fun mouseExited(e: MouseEvent?) {
 
-            if ((e != null) && (moveStart != null)) {
-                moveX = e.x
-                moveY = e.y
+            if ((e != null) && (cursorStart != 0)) {
+                cursorX = e.x
+                cursorY = e.y
                 finishMove()
             }
         }
@@ -109,38 +144,64 @@ class Board : JPanel() {
         }
 
         private fun startMove() {
-            val square = board.squareNumberForCoordinates(moveX, moveY)
+            val square = board.squareNumberForCoordinates(cursorX, cursorY)
 
-            if (validMoves.any { it.start == square }) {
-                moveStart = square
+            val canStart = when (mode) {
+                Mode.SETTING_UP -> (square < 0) || !board.position.empty[square]
+                Mode.MOVING -> validMoves.any { it.start == square }
+                Mode.DISABLED -> false
+            }
+
+            if (canStart) {
+                cursorStart = square
                 board.repaint()
             }
         }
 
         private fun continueMove() {
-            val square = board.squareNumberForCoordinates(moveX, moveY)
+            val square = board.squareNumberForCoordinates(cursorX, cursorY)
 
-            moveSteps.push(square)
+            if (mode == Mode.MOVING) {
+                cursorSteps.push(square)
 
-            if (!validMoves.any { (it.start == moveStart) && (it.steps startsWith moveSteps) }) {
-                moveSteps.pop()
+                if (!validMoves.any { (it.start == cursorStart) && (it.steps startsWith cursorSteps) }) {
+                    cursorSteps.pop()
+                }
             }
 
             board.repaint();
         }
 
         private fun finishMove() {
-            val moveEnd = board.squareNumberForCoordinates(moveX, moveY)
+            val cursorEnd = board.squareNumberForCoordinates(cursorX, cursorY)
 
-            val moves = validMoves.filter {
-                (it.start == moveStart) && (it.steps startsWith moveSteps) && (it.end == moveEnd)
-            }
+            if (mode == Mode.SETTING_UP) {
+                if (cursorStart < 0) {
+                    if (cursorEnd > 0) {
+                        board.position.empty[cursorEnd] = false
+                        board.position.white[cursorEnd] = (cursorStart == -1) || (cursorStart == -2)
+                        board.position.king[cursorEnd] = (cursorStart == -2) || (cursorStart == -4)
+                    }
+                } else {
+                    if (cursorEnd < 0) {
+                        board.position.empty[cursorStart] = true
+                    }
+                }
 
-            moveSteps.clear()
-            moveStart = null
+                cursorStart = 0
 
-            if (moves.isEmpty() || !board.onMoveEntered(moves)) {
                 board.repaint()
+            } else {
+                val moves = validMoves.filter {
+                    (it.start == cursorStart) && (it.steps startsWith cursorSteps) && (it.end == cursorEnd)
+                }
+
+                cursorSteps.clear()
+                cursorStart = 0
+
+                if (moves.isEmpty() || !onMoveEntered(moves)) {
+                    board.repaint()
+                }
             }
         }
     }
@@ -148,7 +209,7 @@ class Board : JPanel() {
     private val handler = MouseHandler(this)
 
     init {
-        preferredSize = Dimension(10 * style.squareSize, 10 * style.squareSize)
+        preferredSize = Dimension(10 * style.squareSize, 11 * style.squareSize)
 
         addMouseListener(handler)
         addMouseMotionListener(handler)
@@ -156,8 +217,22 @@ class Board : JPanel() {
 
     override fun paintComponent(pad: Graphics) {
 
+        val rh = RenderingHints(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON)
+        (pad as Graphics2D).setRenderingHints(rh)
+
+        pad.color = Color(0xf0, 0xf0, 0xf0)
+        pad.fillRect(0, 0, 10 * style.squareSize, style.squareSize)
+
+        for (col in (3..6)) {
+            val squareNumber = squareNumber(-1, col)
+
+            paintPiece(pad, squareNumber, col * style.squareSize, 0, false)
+        }
+
         for (row in (0..9)) {
-            val y = row * style.squareSize;
+            val y = (row + 1) * style.squareSize;
 
             for (col in (0..9)) {
                 val x = col * style.squareSize
@@ -171,15 +246,15 @@ class Board : JPanel() {
                     pad.color = style.colorDarkSquare
                     pad.fillRect(x, y, style.squareSize, style.squareSize)
 
-                    if (position.empty[squareNumber] || (squareNumber == handler.moveStart)) {
+                    if (position.empty[squareNumber] || (squareNumber == handler.cursorStart)) {
                         // ignore
                     } else {
-                        paintPiece(pad, squareNumber, x, y, squareNumber in handler.moveSteps)
+                        paintPiece(pad, squareNumber, x, y, squareNumber in handler.cursorSteps)
                     }
                 }
 
-                if (handler.moveStart != null) {
-                    paintPiece(pad, handler.moveStart as Int, handler.moveX - style.squareSize / 2, handler.moveY - style.squareSize / 2, false)
+                if (handler.cursorStart != 0) {
+                    paintPiece(pad, handler.cursorStart, handler.cursorX - style.squareSize / 2, handler.cursorY - style.squareSize / 2, false)
                 }
             }
         }
@@ -187,25 +262,40 @@ class Board : JPanel() {
 
     private fun paintPiece(pad: Graphics, squareNumber: Int, x: Int, y: Int, hit: Boolean) {
 
-        val (colorPiece, colorEdge) =
-                if (position.white[squareNumber]) {
-                    if (hit) {
-                        Pair(style.colorWhitePieceHit, style.colorWhiteEdge)
-                    } else {
+        if (squareNumber < 0) {
+            val (colorPiece, colorEdge) =
+                    if ((squareNumber == -1) || (squareNumber == -2)) {
                         Pair(style.colorWhitePiece, style.colorWhiteEdge)
-                    }
-                } else {
-                    if (hit) {
-                        Pair(style.colorBlackPieceHit, style.colorBlackEdge)
                     } else {
                         Pair(style.colorBlackPiece, style.colorBlackEdge)
                     }
-                }
 
-        if (position.king[squareNumber]) {
-            paintKing(pad, x, y, colorPiece, colorEdge)
+            if ((squareNumber == -2) || (squareNumber == -4)) {
+                paintKing(pad, x, y, colorPiece, colorEdge)
+            } else {
+                paintMan(pad, x, y, colorPiece, colorEdge)
+            }
         } else {
-            paintMan(pad, x, y, colorPiece, colorEdge)
+            val (colorPiece, colorEdge) =
+                    if (position.white[squareNumber]) {
+                        if (hit) {
+                            Pair(style.colorWhitePieceHit, style.colorWhiteEdge)
+                        } else {
+                            Pair(style.colorWhitePiece, style.colorWhiteEdge)
+                        }
+                    } else {
+                        if (hit) {
+                            Pair(style.colorBlackPieceHit, style.colorBlackEdge)
+                        } else {
+                            Pair(style.colorBlackPiece, style.colorBlackEdge)
+                        }
+                    }
+
+            if (position.king[squareNumber]) {
+                paintKing(pad, x, y, colorPiece, colorEdge)
+            } else {
+                paintMan(pad, x, y, colorPiece, colorEdge)
+            }
         }
     }
 
@@ -261,7 +351,7 @@ class Board : JPanel() {
 
         pad.color = colorPiece
         pad.fillArc(x + squareSize6, y + squareSize8, 4 * squareSize6, 2 * squareSize8, 0, 180)
-        pad.fillRect(x + squareSize6, y + 2 * squareSize8, 2 * squareSize6 + 1, 4 * squareSize8 + 1)
+        pad.fillRect(x + squareSize6, y + 2 * squareSize8, 4 * squareSize6 + 1, 4 * squareSize8 + 1)
         pad.fillArc(x + squareSize6, y + 5 * squareSize8, 4 * squareSize6, 2 * squareSize8, 180, 180)
 
         pad.color = colorEdge
@@ -270,16 +360,22 @@ class Board : JPanel() {
     }
 
     private fun squareNumberForCoordinates(x: Int, y: Int) =
-            squareNumber(y / style.squareSize, x / style.squareSize)
+            squareNumber(y / style.squareSize - 1, x / style.squareSize)
 
     private fun squareNumber(row: Int, col: Int) =
-            if (row % 2 == col % 2)
-                0
-            else
-                if (upsideDown)
-                    50 - row * 5 - (col / 2)
+            if (row < 0)
+                if ((col < 3) || (col > 6))
+                    0
                 else
-                    1 + row * 5 + (col / 2)
+                    2 - col
+            else
+                if ((col < 0) || (col > 9) || (row % 2 == col % 2))
+                    0
+                else
+                    if (upsideDown)
+                        50 - row * 5 - (col / 2)
+                    else
+                        1 + row * 5 + (col / 2)
 }
 
 infix fun IntArray.startsWith(head: Stack<Int>): Boolean {

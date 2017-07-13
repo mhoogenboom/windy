@@ -107,7 +107,7 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
 
     private fun finish(message: String) {
 
-        view.enableMovesOnBoard(null)
+        view.disableBoard()
         view.enableAcceptDraw(null)
         view.enableResign(null)
 

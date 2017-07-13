@@ -25,7 +25,11 @@ interface View {
 
     fun enableNextMove(onNextMoveRequired: (() -> Unit)?)
 
-    fun enableMovesOnBoard(onActionEntered: ((Action) -> Boolean)?)
+    fun enableSettingUpOnBoard()
+
+    fun enableMovesOnBoard(onActionEntered: (Action) -> Boolean)
+
+    fun disableBoard()
 
     fun enableAcceptDraw(onActionEntered: ((Action) -> Boolean)?)
 

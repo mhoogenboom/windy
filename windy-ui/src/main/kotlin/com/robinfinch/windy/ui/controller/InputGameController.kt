@@ -89,7 +89,7 @@ class InputGameController(private val view: View, private val texts: ResourceBun
 
     private fun finish() {
 
-        view.enableMovesOnBoard(null)
+        view.disableBoard()
         view.enableAcceptDraw(null)
         view.enableResign(null)
 

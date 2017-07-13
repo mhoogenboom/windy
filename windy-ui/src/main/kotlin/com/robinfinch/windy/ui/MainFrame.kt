@@ -60,7 +60,7 @@ class MainFrame(private val texts: ResourceBundle) : View {
         gbc.gridy = 0
         gbc.gridheight = 3
         gbc.fill = GridBagConstraints.BOTH
-        gbc.insets = Insets(10, 10, 0, 10)
+        gbc.insets = Insets(58, 10, 0, 10)
         frame.add(listScroller, gbc)
 
         clearList = JButton(texts.getString("controls.clear_list"))
@@ -69,6 +69,7 @@ class MainFrame(private val texts: ResourceBundle) : View {
         gbc.gridy = 3
         gbc.gridheight = 1
         gbc.fill = GridBagConstraints.HORIZONTAL
+        gbc.insets = Insets(10, 10, 0, 10)
         frame.add(clearList, gbc)
 
         board = Board()
@@ -102,7 +103,7 @@ class MainFrame(private val texts: ResourceBundle) : View {
         gbc.gridy = 0
         gbc.weighty = 1.0
         gbc.fill = GridBagConstraints.BOTH
-        gbc.insets = Insets(10, 10, 0, 10)
+        gbc.insets = Insets(58, 10, 0, 10)
         frame.add(historyScroller, gbc)
 
         nextMove = JButton(texts.getString("controls.next_move"))
@@ -111,6 +112,7 @@ class MainFrame(private val texts: ResourceBundle) : View {
         gbc.gridy = 1
         gbc.weighty = 0.0
         gbc.fill = GridBagConstraints.HORIZONTAL
+        gbc.insets = Insets(10, 10, 0, 10)
         frame.add(nextMove, gbc)
 
         acceptDraw = JButton(texts.getString("controls.accept_draw"))
@@ -188,19 +190,24 @@ class MainFrame(private val texts: ResourceBundle) : View {
         }
     }
 
-    override fun enableMovesOnBoard(onActionEntered: ((com.robinfinch.windy.core.game.Action) -> Boolean)?) {
+    override fun enableSettingUpOnBoard() {
+        board.enableSettingUp()
+        proposeDrawField.isEnabled = false
+    }
 
-        if (onActionEntered == null) {
-            board.onMoveEntered = { false }
-            proposeDrawField.isEnabled = false
-        } else {
-            board.onMoveEntered = { moves ->
-                val action = ExecuteMove(moves[0], proposeDrawField.isSelected) // todo
-                proposeDrawField.isSelected = false
-                onActionEntered(action)
-            }
-            proposeDrawField.isEnabled = true
+    override fun enableMovesOnBoard(onActionEntered: (com.robinfinch.windy.core.game.Action) -> Boolean) {
+
+        board.enableMoves { moves ->
+            val action = ExecuteMove(moves[0], proposeDrawField.isSelected) // todo
+            proposeDrawField.isSelected = false
+            onActionEntered(action)
         }
+        proposeDrawField.isEnabled = true
+    }
+
+    override fun disableBoard() {
+        board.disableBoard()
+        proposeDrawField.isEnabled = false
     }
 
     override fun enableAcceptDraw(onActionEntered: ((com.robinfinch.windy.core.game.Action) -> Boolean)?) {
