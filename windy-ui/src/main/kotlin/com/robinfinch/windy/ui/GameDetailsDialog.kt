@@ -4,6 +4,9 @@ import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import java.awt.event.WindowListener
 import java.util.*
 import javax.swing.*
 
@@ -18,7 +21,7 @@ class GameDetailsDialog(parent: JFrame, texts: ResourceBundle)
 
     private val dateField = JTextField()
 
-    var onGameDetailsEntered: (GameDetails) -> Unit = { _ -> }
+    var onGameDetailsEntered: (Optional<GameDetails>) -> Unit = { _ -> }
 
     init {
         layout = GridBagLayout()
@@ -69,6 +72,17 @@ class GameDetailsDialog(parent: JFrame, texts: ResourceBundle)
         gbc.weightx = 0.7
         add(dateField, gbc)
 
+        val done = JButton(texts.getString("game_details.done"))
+        done.addActionListener {
+            isVisible = false
+            val details = GameDetails(
+                    whiteField.text,
+                    blackField.text,
+                    eventField.text,
+                    dateField.text)
+            onGameDetailsEntered(Optional.of(details))
+        }
+
         gbc.insets = Insets(10, 10, 10, 10)
         gbc.fill = GridBagConstraints.NONE
         gbc.anchor = GridBagConstraints.CENTER
@@ -78,19 +92,16 @@ class GameDetailsDialog(parent: JFrame, texts: ResourceBundle)
         gbc.gridx = 0
         gbc.weightx = 0.0
         gbc.gridwidth = 2
-
-        val done = JButton(texts.getString("game_details.done"))
-        done.addActionListener {
-            setVisible(false)
-            val details = GameDetails(
-                    whiteField.text,
-                    blackField.text,
-                    eventField.text,
-                    dateField.text)
-            onGameDetailsEntered(details)
-        }
-
         add(done, gbc)
+
+        defaultCloseOperation = WindowConstants.DO_NOTHING_ON_CLOSE
+
+        addWindowListener(object : WindowAdapter() {
+            override fun windowClosing(e: WindowEvent?) {
+                isVisible = false
+                onGameDetailsEntered(Optional.empty())
+            }
+        })
     }
 
     fun initialiseDate(date: String) {
@@ -103,10 +114,10 @@ class GameDetailsDialog(parent: JFrame, texts: ResourceBundle)
         }
     }
 
-    fun show(onGameDetailsEntered: (GameDetails) -> Unit) {
+    fun show(onGameDetailsEntered: (Optional<GameDetails>) -> Unit) {
         this.onGameDetailsEntered = onGameDetailsEntered
         setLocationRelativeTo(parent)
-        setVisible(true)
+        isVisible = true
     }
 }
 

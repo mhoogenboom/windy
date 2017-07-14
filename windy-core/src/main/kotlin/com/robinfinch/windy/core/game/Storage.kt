@@ -12,6 +12,6 @@ interface Storage {
     fun findByPosition(position: Position): Observable<List<Game>>
 }
 
-class Query(val player: String, val withWhite: Boolean = true, val withBlack: Boolean = true) {
+class Query(val player: String, val withWhite: Boolean = true, val withBlack: Boolean = true, val position: Position) {
 
 }

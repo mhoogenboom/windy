@@ -28,7 +28,7 @@ class Board : JPanel() {
     var style = Style()
         set(style) {
             field = style
-            minimumSize = Dimension(10 * style.squareSize, 11 * style.squareSize)
+            preferredSize = Dimension(10 * style.squareSize, 11 * style.squareSize)
             repaint()
         }
 

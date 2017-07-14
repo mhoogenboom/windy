@@ -2,7 +2,6 @@ package com.robinfinch.windy.ui.controller
 
 import com.robinfinch.windy.core.text.GameReader
 import com.robinfinch.windy.db.Database
-import com.robinfinch.windy.ui.getString
 import java.util.*
 import javax.swing.JMenuItem
 

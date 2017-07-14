@@ -1,6 +1,7 @@
 package com.robinfinch.windy.ui.controller
 
 import com.robinfinch.windy.core.game.Game
+import com.robinfinch.windy.core.game.Query
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.core.text.format
 import com.robinfinch.windy.db.Database
@@ -31,17 +32,35 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
     private fun start() {
         view.enableMenu(false)
 
-        view.enterSearchCriteria { query ->
-            db.findByPlayer(query)
+        view.enterSearchCriteria(this::onSearchCriteriaEntered)
+    }
+
+    private fun onSearchCriteriaEntered(optQuery: Optional<Query>) {
+
+        if (optQuery.isPresent) {
+            val query = optQuery.get()
+
+            if (query.player.isBlank()) {
+                db.findByPosition(query.position)
+            } else {
+                db.findByPlayer(query)
+            }
                     .subscribeOn(Schedulers.io())
                     .observeOn(edt())
                     .subscribe(this::start)
+        } else {
+            view.enableMenu(true)
         }
     }
 
     fun start(games: List<Game>) {
-        view.setGames(games)
-        view.enableSelectGame(this::onGameSelected)
+        if (games.isEmpty()) {
+            view.showMessage(texts.getString("search_games.none_found"))
+            view.enableMenu(true)
+        } else {
+            view.setGames(games)
+            view.enableSelectGame(this::onGameSelected)
+        }
     }
 
     private fun onGameSelected(selection: ListSelection<Game>) {

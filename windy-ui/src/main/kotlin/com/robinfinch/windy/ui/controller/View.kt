@@ -7,6 +7,7 @@ import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.ui.GameDetails
 import com.robinfinch.windy.ui.ListSelection
 import java.io.File
+import java.util.*
 import javax.swing.JMenuItem
 
 interface View {
@@ -35,9 +36,9 @@ interface View {
 
     fun enableResign(onActionEntered: ((Action) -> Boolean)?)
 
-    fun enterGameDetails(date: String, onGameDetailsEntered: (GameDetails) -> Unit)
+    fun enterGameDetails(date: String, onGameDetailsEntered: (Optional<GameDetails>) -> Unit)
 
-    fun enterSearchCriteria(onSearchCriteriaEntered: (Query) -> Unit)
+    fun enterSearchCriteria(onSearchCriteriaEntered: (Optional<Query>) -> Unit)
 
     fun showMessage(message: String)
 

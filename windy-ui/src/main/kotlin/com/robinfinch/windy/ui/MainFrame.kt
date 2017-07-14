@@ -228,13 +228,13 @@ class MainFrame(private val texts: ResourceBundle) : View {
         }
     }
 
-    override fun enterGameDetails(date: String, onGameDetailsEntered: (GameDetails) -> Unit) {
+    override fun enterGameDetails(date: String, onGameDetailsEntered: (Optional<GameDetails>) -> Unit) {
 
         gameDetailsDialog.initialiseDate(date)
         gameDetailsDialog.show(onGameDetailsEntered)
     }
 
-    override fun enterSearchCriteria(onSearchCriteriaEntered: (Query) -> Unit) {
+    override fun enterSearchCriteria(onSearchCriteriaEntered: (Optional<Query>) -> Unit) {
 
         searchGamesDialog.show(onSearchCriteriaEntered)
     }

@@ -34,22 +34,28 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
         view.enterGameDetails(LocalDate.now().toString(), this::onGameDetailsEntered)
     }
 
-    private fun onGameDetailsEntered(details: GameDetails) {
+    private fun onGameDetailsEntered(optDetails: Optional<GameDetails>) {
 
-        arbiter.setupGame()
-        arbiter.white = details.white
-        arbiter.black = details.black
-        arbiter.event = details.event
-        arbiter.date = details.date
+        if (optDetails.isPresent) {
+            val details = optDetails.get()
 
-        view.setGames(listOf(arbiter.currentGame))
-        view.setBoard(arbiter.currentPosition)
+            arbiter.setupGame()
+            arbiter.white = details.white
+            arbiter.black = details.black
+            arbiter.event = details.event
+            arbiter.date = details.date
 
-        view.enableMovesOnBoard(this::onActionEntered)
-        view.enableResign(this::onActionEntered)
+            view.setGames(listOf(arbiter.currentGame))
+            view.setBoard(arbiter.currentPosition)
 
-        whiteHasTheBoard = true
-        play()
+            view.enableMovesOnBoard(this::onActionEntered)
+            view.enableResign(this::onActionEntered)
+
+            whiteHasTheBoard = true
+            play()
+        } else {
+            view.enableMenu(true)
+        }
     }
 
     private fun onActionEntered(action: Action): Boolean {

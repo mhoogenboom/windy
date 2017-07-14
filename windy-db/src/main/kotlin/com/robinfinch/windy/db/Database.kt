@@ -30,45 +30,45 @@ class Database(private val dataDir: File) : Storage {
 
     override fun store(game: Game) =
 
-        Observable.fromCallable {
-            storeGame(game)
+            Observable.fromCallable {
+                storeGame(game)
 
-            playerIndex.insert(game.white, game.black, id)
+                playerIndex.insert(game.white, game.black, id)
 
-            val position = Position()
-            position.start()
+                val position = Position()
+                position.start()
 
-            // skip the start position
+                // skip the start position
 
-            for (move in game.moves()) {
-                position.execute(move)
+                for (move in game.moves()) {
+                    position.execute(move)
 
-                positionIndex.insert(position, id)
+                    positionIndex.insert(position, id)
+                }
             }
-        }
 
     override fun findByPlayer(query: Query): Observable<List<Game>> =
 
-        Observable.fromCallable {
+            Observable.fromCallable {
 
-            val games = mutableListOf<Game>()
+                val games = mutableListOf<Game>()
 
-            val gamesPlayed = playerIndex.find(query.player)
-            if (query.withWhite) {
-                games.addAll(gamesPlayed.withWhite.map(this::loadGame))
+                val gamesPlayed = playerIndex.find(query.player)
+                if (query.withWhite) {
+                    games.addAll(gamesPlayed.withWhite.map(this::loadGame))
+                }
+                if (query.withBlack) {
+                    games.addAll(gamesPlayed.withBlack.map(this::loadGame))
+                }
+
+                games
             }
-            if (query.withBlack) {
-                games.addAll(gamesPlayed.withBlack.map(this::loadGame))
-            }
-
-            games
-        }
 
     override fun findByPosition(position: Position): Observable<List<Game>> =
 
-        Observable.fromCallable {
-            positionIndex.find(position).map(this::loadGame)
-        }
+            Observable.fromCallable {
+                positionIndex.find(position).map(this::loadGame)
+            }
 
     private fun loadGame(id: Long): Game {
 
