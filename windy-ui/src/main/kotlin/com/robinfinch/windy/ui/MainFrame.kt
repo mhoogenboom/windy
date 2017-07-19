@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets
 import java.io.File
+import java.net.URL
 import java.util.*
 import javax.swing.*
 
@@ -241,6 +242,13 @@ class MainFrame(private val texts: ResourceBundle) : View {
 
     override fun showMessage(message: String) {
         JOptionPane.showMessageDialog(frame, message)
+    }
+
+    override fun showUrlDialog(): URL? {
+
+        val input = JOptionPane.showInputDialog(frame, texts.getString("url_dialog.message"), texts.getString("url_dialog.title"), JOptionPane.QUESTION_MESSAGE);
+
+        return URL(input)
     }
 
     override fun showOpenDialog(): File? {

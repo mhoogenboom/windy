@@ -2,7 +2,9 @@ package com.robinfinch.windy.core.text
 
 import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.position.Position
+import io.reactivex.Observable
 import java.io.File
+import java.net.URL
 
 class GameReader {
 
@@ -25,31 +27,53 @@ class GameReader {
 
     private var readingHeader = true
 
-    fun read(file: File): List<Game> {
-        val games = mutableListOf<Game>()
+    fun read(url: URL): Observable<List<Game>> =
 
-        position.start()
+            Observable.fromCallable {
 
-        file.forEachLine {
-            when {
-                it.isBlank() -> {
-                    // blank
+                val games = mutableListOf<Game>()
+
+                url.openStream().use { inputStream ->
+                    inputStream.bufferedReader().forEachLine {
+                        parseLine(games, it)
+                    }
                 }
-                it.startsWith('%') -> {
-                    // comment
-                }
-                it.startsWith('[') -> {
-                    parseTag(games, it)
-                }
-                else -> {
-                    parseMoves(it)
-                }
+
+                games
             }
+
+    fun read(file: File): Observable<List<Game>> =
+
+        Observable.fromCallable {
+            val games = mutableListOf<Game>()
+
+            position.start()
+
+            file.forEachLine {
+                parseLine(games, it)
+            }
+
+            games.add(game)
+
+            games
         }
 
-        games.add(game)
+    private fun parseLine(games: MutableList<Game>, it: String) {
 
-        return games
+        when {
+            it.isBlank() -> {
+                // blank
+            }
+            it.startsWith('%') -> {
+                // comment
+            }
+            it.startsWith('[') -> {
+                parseTag(games, it)
+            }
+            else -> {
+                parseMoves(it)
+            }
+        }
     }
 
     private fun parseTag(games: MutableList<Game>, text: String) {

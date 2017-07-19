@@ -7,6 +7,7 @@ import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.ui.GameDetails
 import com.robinfinch.windy.ui.ListSelection
 import java.io.File
+import java.net.URL
 import java.util.*
 import javax.swing.JMenuItem
 
@@ -41,6 +42,8 @@ interface View {
     fun enterSearchCriteria(onSearchCriteriaEntered: (Optional<Query>) -> Unit)
 
     fun showMessage(message: String)
+
+    fun showUrlDialog(): URL?
 
     fun showOpenDialog(): File?
 

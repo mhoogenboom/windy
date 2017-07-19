@@ -1,7 +1,10 @@
 package com.robinfinch.windy.ui.controller
 
+import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.text.GameReader
 import com.robinfinch.windy.db.Database
+import com.robinfinch.windy.ui.edt
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.swing.JMenuItem
 
@@ -18,14 +21,21 @@ class ImportGamesController(private val view: View, private val texts: ResourceB
         view.enableMenu(false)
 
         val file = view.showOpenDialog()
-        if (file != null) {
-            val games = GameReader().read(file)
-
-            for (game in games) {
-                db.store(game)
-            }
-
-            replayGamesController.start(games)
+        if (file == null) {
+            view.enableMenu(true)
+        } else {
+            GameReader().read(file)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(edt())
+                    .subscribe(this::importGames)
         }
+    }
+
+    private fun importGames(games: List<Game>) {
+        for (game in games) {
+                db.store(game)
+        }
+
+        replayGamesController.start(games)
     }
 }
