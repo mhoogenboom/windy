@@ -1,15 +1,22 @@
 package com.robinfinch.windy.core.game
 
+import com.robinfinch.windy.core.exercise.Exercise
 import com.robinfinch.windy.core.position.Position
 import io.reactivex.Observable
 
 interface Storage {
 
-    fun store(game: Game): Observable<Unit>
+    fun storeGame(game: Game): Observable<Unit>
 
-    fun findByPlayer(query: Query): Observable<List<Game>>
+    fun findGamesByPlayer(query: Query): Observable<List<Game>>
 
-    fun findByPosition(position: Position): Observable<List<Game>>
+    fun findGamesByPosition(position: Position): Observable<List<Game>>
+
+    fun storeExercise(exercise: Exercise): Observable<Unit>
+
+    fun findExercisesByScore(count: Int): Observable<List<Exercise>>
+
+    fun findExercisesByPosition(position: Position): Observable<List<Exercise>>
 }
 
 class Query(val player: String, val withWhite: Boolean = true, val withBlack: Boolean = true, val position: Position) {

@@ -33,7 +33,7 @@ class ImportGamesController(private val view: View, private val texts: ResourceB
 
     private fun importGames(games: List<Game>) {
         for (game in games) {
-                db.store(game)
+                db.storeGame(game)
         }
 
         replayGamesController.start(games)

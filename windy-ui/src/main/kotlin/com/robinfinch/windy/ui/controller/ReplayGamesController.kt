@@ -41,9 +41,9 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
             val query = optQuery.get()
 
             if (query.player.isBlank()) {
-                db.findByPosition(query.position)
+                db.findGamesByPosition(query.position)
             } else {
-                db.findByPlayer(query)
+                db.findGamesByPlayer(query)
             }
                     .subscribeOn(Schedulers.io())
                     .observeOn(edt())

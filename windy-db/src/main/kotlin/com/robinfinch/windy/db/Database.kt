@@ -1,5 +1,6 @@
 package com.robinfinch.windy.db
 
+import com.robinfinch.windy.core.exercise.Exercise
 import com.robinfinch.windy.core.game.Game
 import com.robinfinch.windy.core.game.Query
 import com.robinfinch.windy.core.game.Storage
@@ -15,6 +16,8 @@ class Database(private val dataDir: File) : Storage {
 
     private val playerIndex: PlayerIndex = PlayerIndex(dataDir)
 
+    private val exerciseIndex: ExerciseIndex = ExerciseIndex(dataDir)
+
     private val positionIndex: PositionIndex = PositionIndex(dataDir)
 
     init {
@@ -28,10 +31,10 @@ class Database(private val dataDir: File) : Storage {
                 }
     }
 
-    override fun store(game: Game) =
+    override fun storeGame(game: Game) =
 
             Observable.fromCallable {
-                storeGame(game)
+                store(game)
 
                 playerIndex.insert(game.white, game.black, id)
 
@@ -47,7 +50,7 @@ class Database(private val dataDir: File) : Storage {
                 }
             }
 
-    override fun findByPlayer(query: Query): Observable<List<Game>> =
+    override fun findGamesByPlayer(query: Query): Observable<List<Game>> =
 
             Observable.fromCallable {
 
@@ -55,42 +58,67 @@ class Database(private val dataDir: File) : Storage {
 
                 val gamesPlayed = playerIndex.find(query.player)
                 if (query.withWhite) {
-                    games.addAll(gamesPlayed.withWhite.map(this::loadGame))
+                    games.addAll(gamesPlayed.withWhite.map(this::load))
                 }
                 if (query.withBlack) {
-                    games.addAll(gamesPlayed.withBlack.map(this::loadGame))
+                    games.addAll(gamesPlayed.withBlack.map(this::load))
                 }
 
                 games
             }
 
-    override fun findByPosition(position: Position): Observable<List<Game>> =
+    override fun findGamesByPosition(position: Position): Observable<List<Game>> =
 
             Observable.fromCallable {
-                positionIndex.find(position).map(this::loadGame)
+                val games: List<Game> = positionIndex.find(position).map(this::load)
+                games
             }
 
-    private fun loadGame(id: Long): Game {
+    override fun storeExercise(exercise: Exercise) =
 
-        val file = fileFor(id)
+            Observable.fromCallable {
+                store(exercise)
 
-        return ObjectInputStream(FileInputStream(file)).use { ois ->
-            ois.readObject() as Game
-        }
-    }
+                exerciseIndex.insert(id)
 
-    private fun storeGame(game: Game) {
+                positionIndex.insert(exercise.position, id)
+            }
+
+    override fun findExercisesByScore(count: Int): Observable<List<Exercise>> =
+
+            Observable.fromCallable {
+                val exercises: List<Exercise> = exerciseIndex.find(count).map(this::load)
+                exercises
+            }
+
+    override fun findExercisesByPosition(position: Position): Observable<List<Exercise>> =
+
+            Observable.fromCallable {
+                val exercises: List<Exercise> = positionIndex.find(position).map(this::load)
+                exercises
+            }
+
+    private fun <T> store(item: T) {
 
         id++
 
         val file = fileFor(id)
 
         ObjectOutputStream(FileOutputStream(file)).use { oos ->
-            oos.writeObject(game)
+            oos.writeObject(item)
         }
 
         ObjectOutputStream(FileOutputStream(idFile)).use { oos ->
             oos.writeLong(id)
+        }
+    }
+
+    private fun <T> load(id: Long): T {
+
+        val file = fileFor(id)
+
+        return ObjectInputStream(FileInputStream(file)).use { ois ->
+            ois.readObject() as T
         }
     }
 
