@@ -10,8 +10,6 @@ import com.robinfinch.windy.ui.ListSelection
 import com.robinfinch.windy.ui.Selected
 import com.robinfinch.windy.ui.edt
 import io.reactivex.schedulers.Schedulers
-import java.io.BufferedWriter
-import java.io.StringWriter
 import java.util.*
 import javax.swing.JMenuItem
 
@@ -114,10 +112,7 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
 
     private fun play() {
 
-        val history = StringWriter()
-        BufferedWriter(history).use { out -> currentGame.moves().format(out, html = true, emphasize = currentMove) }
-
         view.setBoard(position)
-        view.setHistory(history.toString())
+        view.setHistory(currentGame.moves().format(html = true, emphasize = currentMove))
     }
 }

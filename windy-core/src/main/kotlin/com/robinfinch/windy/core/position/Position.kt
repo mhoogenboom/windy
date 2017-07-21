@@ -1,6 +1,8 @@
 package com.robinfinch.windy.core.position
 
-class Position() {
+import java.io.Serializable
+
+class Position : Serializable {
 
     companion object {
         val NUMBER_OF_SQUARES = 50

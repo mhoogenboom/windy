@@ -7,7 +7,6 @@ import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.ui.GameDetails
 import com.robinfinch.windy.ui.ListSelection
 import java.io.File
-import java.net.URL
 import java.util.*
 import javax.swing.JMenuItem
 
@@ -22,6 +21,8 @@ interface View {
     fun enableSelectGame(onGameSelected: ((ListSelection<Game>) -> Unit)?)
 
     fun setBoard(position: Position, upsideDown: Boolean = false)
+
+    fun getBoard(): Position
 
     fun setHistory(moves: String)
 
@@ -43,7 +44,7 @@ interface View {
 
     fun showMessage(message: String)
 
-    fun showUrlDialog(): URL?
+    fun showInputDialog(title: String, message: String): String?
 
     fun showOpenDialog(): File?
 

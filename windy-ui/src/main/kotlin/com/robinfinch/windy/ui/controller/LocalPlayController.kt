@@ -10,8 +10,6 @@ import com.robinfinch.windy.ui.GameDetails
 import com.robinfinch.windy.ui.edt
 import com.robinfinch.windy.ui.getString
 import io.reactivex.schedulers.Schedulers
-import java.io.BufferedWriter
-import java.io.StringWriter
 import java.time.LocalDate
 import java.util.*
 import javax.swing.JMenuItem
@@ -86,11 +84,8 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
         when (game.result) {
 
             Game.Result.UNKNOWN -> {
-                val history = StringWriter()
-                BufferedWriter(history).use { out -> game.moves().format(out, html = true) }
-
                 view.setBoard(arbiter.currentPosition, !whiteHasTheBoard)
-                view.setHistory(history.toString())
+                view.setHistory(game.moves().format(html = true))
                 view.enableAcceptDraw(if (arbiter.drawProposed) this::onActionEntered else null)
 
                 val player = if (whiteHasTheBoard) arbiter.white else arbiter.black

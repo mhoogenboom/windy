@@ -9,8 +9,8 @@ internal class ExerciseIndex(dataDir: File) {
         val idComparator = compareBy<ScoreCard> { it.exerciseId }
 
         val scoreComparator = compareBy<ScoreCard> { it.passCount + it.failCount }
-                    .thenByDescending { it.failCount }
-                    .thenBy { it.exerciseId }
+                .thenByDescending { it.failCount }
+                .thenBy { it.exerciseId }
     }
 
     private val indexFile = File(dataDir, "exercise_index.ser")
@@ -62,7 +62,7 @@ internal class ExerciseIndex(dataDir: File) {
     fun find(count: Int) = index.sortedWith(scoreComparator).take(count).map(ScoreCard::exerciseId)
 }
 
-internal class ScoreCard(val exerciseId: Long) {
+internal class ScoreCard(val exerciseId: Long) : Serializable {
     var passCount = 0
     var failCount = 0
 }

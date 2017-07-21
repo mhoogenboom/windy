@@ -44,19 +44,19 @@ class GameReader {
 
     fun read(file: File): Observable<List<Game>> =
 
-        Observable.fromCallable {
-            val games = mutableListOf<Game>()
+            Observable.fromCallable {
+                val games = mutableListOf<Game>()
 
-            position.start()
+                position.start()
 
-            file.forEachLine {
-                parseLine(games, it)
+                file.forEachLine {
+                    parseLine(games, it)
+                }
+
+                games.add(game)
+
+                games
             }
-
-            games.add(game)
-
-            games
-        }
 
     private fun parseLine(games: MutableList<Game>, it: String) {
 

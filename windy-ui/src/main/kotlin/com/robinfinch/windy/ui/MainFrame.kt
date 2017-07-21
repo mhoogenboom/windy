@@ -9,7 +9,6 @@ import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets
 import java.io.File
-import java.net.URL
 import java.util.*
 import javax.swing.*
 
@@ -178,6 +177,8 @@ class MainFrame(private val texts: ResourceBundle) : View {
         board.upsideDown = upsideDown
     }
 
+    override fun getBoard() = board.position.copy()
+
     override fun setHistory(moves: String) {
         history.text = moves
     }
@@ -244,11 +245,8 @@ class MainFrame(private val texts: ResourceBundle) : View {
         JOptionPane.showMessageDialog(frame, message)
     }
 
-    override fun showUrlDialog(): URL? {
-
-        val input = JOptionPane.showInputDialog(frame, texts.getString("url_dialog.message"), texts.getString("url_dialog.title"), JOptionPane.QUESTION_MESSAGE);
-
-        return URL(input)
+    override fun showInputDialog(title: String, message: String): String {
+        return JOptionPane.showInputDialog(frame, message, title, JOptionPane.QUESTION_MESSAGE);
     }
 
     override fun showOpenDialog(): File? {

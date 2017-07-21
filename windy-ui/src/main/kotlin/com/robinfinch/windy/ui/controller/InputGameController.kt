@@ -9,8 +9,6 @@ import com.robinfinch.windy.db.Database
 import com.robinfinch.windy.ui.GameDetails
 import com.robinfinch.windy.ui.edt
 import io.reactivex.schedulers.Schedulers
-import java.io.BufferedWriter
-import java.io.StringWriter
 import java.util.*
 import javax.swing.JMenuItem
 
@@ -83,11 +81,9 @@ class InputGameController(private val view: View, private val texts: ResourceBun
         val game = arbiter.currentGame
 
         if (game.result == Game.Result.UNKNOWN) {
-            val history = StringWriter()
-            BufferedWriter(history).use { out -> game.moves().format(out, html = true) }
 
             view.setBoard(arbiter.currentPosition)
-            view.setHistory(history.toString())
+            view.setHistory(game.moves().format(html = true))
         } else {
             finish()
         }

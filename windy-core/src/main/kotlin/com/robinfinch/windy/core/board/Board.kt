@@ -50,6 +50,7 @@ class Board : JPanel() {
     }
 
     fun enableMoves(onMoveEntered: (List<Move>) -> Boolean) {
+        handler.validMoves = Generator(position).generate()
         handler.enableMoves(onMoveEntered)
     }
 
@@ -183,8 +184,14 @@ class Board : JPanel() {
                         board.position.king[cursorEnd] = (cursorStart == -2) || (cursorStart == -4)
                     }
                 } else {
-                    if (cursorEnd < 0) {
+                    if (cursorEnd != 0) {
                         board.position.empty[cursorStart] = true
+
+                        if (cursorEnd > 0) {
+                            board.position.empty[cursorEnd] = false
+                            board.position.white[cursorEnd] = board.position.white[cursorStart]
+                            board.position.king[cursorEnd] = board.position.king[cursorStart]
+                        }
                     }
                 }
 

@@ -23,7 +23,7 @@ class GameWriter {
         writeTag(out, GameReader.TAG_BLACK, game.black)
         writeTag(out, GameReader.TAG_RESULT, game.result.format())
 
-        game.moves().format(out, 8, true)
+        game.moves().formatTo(out, 8, true)
     }
 
     private fun writeTag(out: BufferedWriter, name: String, value: String) {

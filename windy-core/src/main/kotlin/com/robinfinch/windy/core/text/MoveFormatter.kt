@@ -3,6 +3,7 @@ package com.robinfinch.windy.core.text
 import com.robinfinch.windy.core.position.Move
 import com.robinfinch.windy.core.position.Position
 import java.io.BufferedWriter
+import java.io.StringWriter
 
 fun Move.format(): String {
     return if (steps.size == 0) {
@@ -21,7 +22,17 @@ fun Move.formatWithSteps(): String {
     }
 }
 
-fun List<Move>.format(out: BufferedWriter,
+fun List<Move>.format(plyPerLine: Int = 2,
+                      writeDuplicatesInLongForm: Boolean = false,
+                      html: Boolean = false,
+                      emphasize: Int = -1): String {
+
+    val history = StringWriter()
+    BufferedWriter(history).use { out -> this.formatTo(out, plyPerLine, writeDuplicatesInLongForm, html, emphasize) }
+    return history.toString()
+}
+
+fun List<Move>.formatTo(out: BufferedWriter,
                       plyPerLine: Int = 2,
                       writeDuplicatesInLongForm: Boolean = false,
                       html: Boolean = false,
