@@ -31,22 +31,26 @@ class Database(private val dataDir: File) : Storage {
                 }
     }
 
-    override fun storeGame(game: Game) =
+    override fun storeGames(games: List<Game>) =
 
             Observable.fromCallable {
-                store(game)
+                for (game in games) {
+                    store(game)
 
-                playerIndex.insert(game.white, game.black, id)
+                    playerIndex.insert(game.white, game.black, id)
 
-                val position = Position()
-                position.start()
+                    val position = Position()
+                    position.start()
 
-                // skip the start position
+                    // skip the start position
 
-                for (move in game.moves()) {
-                    position.execute(move)
+                    for (move in game.moves()) {
+                        position.execute(move)
 
-                    positionIndex.insert(position, id)
+                        positionIndex.insert(position, id)
+                    }
+
+                    positionIndex.flush()
                 }
             }
 
@@ -82,6 +86,8 @@ class Database(private val dataDir: File) : Storage {
                 exerciseIndex.insert(id)
 
                 positionIndex.insert(exercise.position, id)
+
+                positionIndex.flush()
             }
 
     override fun findExercisesByScore(count: Int): Observable<List<Exercise>> =

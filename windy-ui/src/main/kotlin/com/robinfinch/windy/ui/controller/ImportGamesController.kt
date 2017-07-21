@@ -32,10 +32,10 @@ class ImportGamesController(private val view: View, private val texts: ResourceB
     }
 
     private fun importGames(games: List<Game>) {
-        for (game in games) {
-                db.storeGame(game)
-        }
 
-        replayGamesController.start(games)
+        db.storeGames(games)
+                .subscribeOn(Schedulers.io())
+                .observeOn(edt())
+                .subscribe { replayGamesController.start(games) }
     }
 }

@@ -53,6 +53,7 @@ internal class ExerciseIndex(dataDir: File) {
     }
 
     private fun flush() {
+
         ObjectOutputStream(FileOutputStream(indexFile)).use { oos ->
             oos.writeObject(index)
         }

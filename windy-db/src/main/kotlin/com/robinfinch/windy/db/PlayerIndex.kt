@@ -25,6 +25,11 @@ internal class PlayerIndex(dataDir: File) {
 
         find(black).withBlack.add(id)
 
+        flush()
+    }
+
+    private fun flush() {
+
         ObjectOutputStream(FileOutputStream(indexFile)).use { oos ->
             oos.writeObject(index)
         }

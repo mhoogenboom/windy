@@ -196,39 +196,41 @@ class Generator(val position: Position) {
 
         var s = forward[end]
 
-        steps.push(end)
-        position.white[end] = !position.white[end]
+        if (position.empty[s]) {
+            steps.push(end)
+            position.white[end] = !position.white[end]
 
-        while (position.empty[s]) {
-            end = left[s]
-            while (position.empty[end]) {
-                end = left[end]
-            }
-            if (position.white[end] != position.white[0]) {
-                generateHitForKing(left, backward, forward, right)
-            }
+            while (position.empty[s]) {
+                end = left[s]
+                while (position.empty[end]) {
+                    end = left[end]
+                }
+                if (position.white[end] != position.white[0]) {
+                    generateHitForKing(left, backward, forward, right)
+                }
 
-            end = right[s]
-            while (position.empty[end]) {
-                end = right[end]
-            }
-            if (position.white[end] != position.white[0]) {
-                generateHitForKing(right, forward, backward, left)
+                end = right[s]
+                while (position.empty[end]) {
+                    end = right[end]
+                }
+                if (position.white[end] != position.white[0]) {
+                    generateHitForKing(right, forward, backward, left)
+                }
+
+                end = s
+                generateMove()
+
+                s = forward[end]
             }
 
             end = s
-            generateMove()
+            if (position.white[end] != position.white[0]) {
+                generateHitForKing(forward, left, right, backward)
+            }
 
-            s = forward[end]
+            end = steps.pop()
+            position.white[end] = !position.white[end]
         }
-
-        end = s
-        if (position.white[end] != position.white[0]) {
-            generateHitForKing(forward, left, right, backward)
-        }
-
-        end = steps.pop()
-        position.white[end] = !position.white[end]
     }
 
     private fun generateMove() {

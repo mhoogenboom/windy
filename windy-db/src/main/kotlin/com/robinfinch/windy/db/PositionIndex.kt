@@ -23,6 +23,9 @@ internal class PositionIndex(dataDir: File) {
     fun insert(position: Position, id: Long) {
 
         find(position).add(id)
+    }
+
+    fun flush() {
 
         ObjectOutputStream(FileOutputStream(indexFile)).use { oos ->
             oos.writeObject(root)

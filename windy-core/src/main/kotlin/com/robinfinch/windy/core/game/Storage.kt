@@ -6,7 +6,7 @@ import io.reactivex.Observable
 
 interface Storage {
 
-    fun storeGame(game: Game): Observable<Unit>
+    fun storeGames(games: List<Game>): Observable<Unit>
 
     fun findGamesByPlayer(query: Query): Observable<List<Game>>
 
