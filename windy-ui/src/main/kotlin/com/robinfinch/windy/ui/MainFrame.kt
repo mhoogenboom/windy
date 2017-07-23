@@ -17,7 +17,8 @@ class MainFrame(private val texts: ResourceBundle) : View {
 
     private val frame: JFrame
 
-    private val menu: JMenu
+    private val mainMenu: JMenu
+    private val boardMenu: JMenu
 
     private val games: DefaultListModel<Game>
     private val gamesList: JList<Game>
@@ -35,10 +36,13 @@ class MainFrame(private val texts: ResourceBundle) : View {
     private val searchGamesDialog: SearchGamesDialog
 
     init {
-        menu = JMenu(texts.getString("app.menu_title"))
+        mainMenu = JMenu(texts.getString("app.menu_main_title"))
+
+        boardMenu = JMenu(texts.getString("app.menu_board_title"))
 
         val mb = JMenuBar()
-        mb.add(menu)
+        mb.add(mainMenu)
+        mb.add(boardMenu)
 
         frame = JFrame()
         frame.title = texts.getString("app.title")
@@ -83,6 +87,10 @@ class MainFrame(private val texts: ResourceBundle) : View {
 
         proposeDrawField = JCheckBox(texts.getString("controls.propose_draw"))
         proposeDrawField.isEnabled = false
+
+        val turnBoard = JMenuItem(texts.getString("app.menu_board_turn"))
+        turnBoard.addActionListener { board.upsideDown = !board.upsideDown }
+        boardMenu.add(turnBoard)
 
         gbc.gridy = 4
         gbc.gridheight = 1
@@ -138,14 +146,18 @@ class MainFrame(private val texts: ResourceBundle) : View {
     override fun show(vararg plugins: JMenuItem) {
 
         for (plugin in plugins) {
-            menu.add(plugin)
+            mainMenu.add(plugin)
         }
 
         frame.setVisible(true)
     }
 
-    override fun enableMenu(enabled: Boolean) {
-        menu.isEnabled = enabled
+    override fun enableMainMenu(enabled: Boolean) {
+        mainMenu.isEnabled = enabled
+    }
+
+    override fun enableBoardMenu(enabled: Boolean) {
+        boardMenu.isEnabled = enabled
     }
 
     override fun setGames(games: List<Game>) {
@@ -172,8 +184,11 @@ class MainFrame(private val texts: ResourceBundle) : View {
         }
     }
 
-    override fun setBoard(position: Position, upsideDown: Boolean) {
+    override fun setBoard(position: Position) {
         board.position = position
+    }
+
+    override fun setBoardUpsideDown(upsideDown: Boolean) {
         board.upsideDown = upsideDown
     }
 

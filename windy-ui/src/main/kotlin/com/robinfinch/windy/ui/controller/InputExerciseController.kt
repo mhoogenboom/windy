@@ -20,7 +20,7 @@ class InputExerciseController(private val view: View, private val texts: Resourc
     fun attachToMenu(): JMenuItem {
         val menuItem = JMenuItem(texts.getString("input_exercise.menu"))
         menuItem.addActionListener {
-            view.enableMenu(false)
+            view.enableMainMenu(false)
 
             exercise = Exercise()
             setUp()
@@ -45,7 +45,7 @@ class InputExerciseController(private val view: View, private val texts: Resourc
         val challenge = view.showInputDialog(texts.getString("input_exercise.challenge_title"), texts.getString("input_exercise.challenge_message"))
 
         if (challenge == null) {
-            view.enableMenu(true)
+            view.enableMainMenu(true)
         } else {
             exercise.challenge = challenge
             enterSolution()
@@ -88,7 +88,8 @@ class InputExerciseController(private val view: View, private val texts: Resourc
                     view.disableBoard()
                     view.setBoard(Position())
                     view.setHistory("")
-                    view.enableMenu(true)
+                    view.enableResign(null)
+                    view.enableMainMenu(true)
                 }
     }
 }

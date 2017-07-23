@@ -14,15 +14,19 @@ interface View {
 
     fun show(vararg plugins: JMenuItem)
 
-    fun enableMenu(enabled: Boolean)
+    fun enableMainMenu(enabled: Boolean)
+
+    fun enableBoardMenu(enabled: Boolean)
 
     fun setGames(games: List<Game>)
 
     fun enableSelectGame(onGameSelected: ((ListSelection<Game>) -> Unit)?)
 
-    fun setBoard(position: Position, upsideDown: Boolean = false)
+    fun setBoard(position: Position)
 
     fun getBoard(): Position
+
+    fun setBoardUpsideDown(upsideDown: Boolean)
 
     fun setHistory(moves: String)
 

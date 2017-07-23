@@ -28,7 +28,7 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
     }
 
     private fun start() {
-        view.enableMenu(false)
+        view.enableMainMenu(false)
 
         view.enterSearchCriteria(this::onSearchCriteriaEntered)
     }
@@ -47,14 +47,14 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
                     .observeOn(edt())
                     .subscribe(this::start)
         } else {
-            view.enableMenu(true)
+            view.enableMainMenu(true)
         }
     }
 
     fun start(games: List<Game>) {
         if (games.isEmpty()) {
             view.showMessage(texts.getString("search_games.none_found"))
-            view.enableMenu(true)
+            view.enableMainMenu(true)
         } else {
             view.setGames(games)
             view.enableSelectGame(this::onGameSelected)
@@ -69,6 +69,7 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
                 position.start()
 
                 view.enableSelectGame(null)
+                view.enableBoardMenu(true)
                 view.enableNextMove(this::onNextMoveRequested)
 
                 currentGame = selection.item
@@ -80,7 +81,7 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
 
                 view.setGames(emptyList())
                 view.enableSelectGame(null)
-                view.enableMenu(true)
+                view.enableMainMenu(true)
             }
         }
     }
@@ -105,7 +106,9 @@ class ReplayGamesController(private val view: View, private val texts: ResourceB
             view.showMessage(message)
 
             view.setBoard(Position())
+            view.setBoardUpsideDown(false)
             view.setHistory("")
+            view.enableBoardMenu(false)
             view.enableSelectGame(this::onGameSelected)
         }
     }

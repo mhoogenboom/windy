@@ -27,7 +27,7 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
     }
 
     private fun start() {
-        view.enableMenu(false)
+        view.enableMainMenu(false)
 
         view.enterGameDetails(LocalDate.now().toString(), this::onGameDetailsEntered)
     }
@@ -52,7 +52,7 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
             whiteHasTheBoard = true
             play()
         } else {
-            view.enableMenu(true)
+            view.enableMainMenu(true)
         }
     }
 
@@ -84,7 +84,8 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
         when (game.result) {
 
             Game.Result.UNKNOWN -> {
-                view.setBoard(arbiter.currentPosition, !whiteHasTheBoard)
+                view.setBoard(arbiter.currentPosition)
+                view.setBoardUpsideDown(!whiteHasTheBoard)
                 view.setHistory(game.moves().format(html = true))
                 view.enableAcceptDraw(if (arbiter.drawProposed) this::onActionEntered else null)
 
@@ -121,7 +122,7 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
                     view.setGames(emptyList())
                     view.setBoard(Position())
                     view.setHistory("")
-                    view.enableMenu(true)
+                    view.enableMainMenu(true)
                 }
     }
 }

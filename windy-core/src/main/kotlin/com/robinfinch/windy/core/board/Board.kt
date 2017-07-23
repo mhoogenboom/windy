@@ -28,9 +28,11 @@ class Board : JPanel() {
     var style = Style()
         set(style) {
             field = style
-            preferredSize = Dimension(10 * style.squareSize, 11 * style.squareSize)
+            preferredSize = Dimension(preferredWidth(), 11 * style.squareSize)
             repaint()
         }
+
+    fun preferredWidth() = 10 * style.squareSize
 
     var upsideDown = false
         set(upsideDown) {
@@ -216,7 +218,7 @@ class Board : JPanel() {
     private val handler = MouseHandler(this)
 
     init {
-        preferredSize = Dimension(10 * style.squareSize, 11 * style.squareSize)
+        preferredSize = Dimension(preferredWidth(), 11 * style.squareSize)
 
         addMouseListener(handler)
         addMouseMotionListener(handler)
@@ -230,7 +232,7 @@ class Board : JPanel() {
         (pad as Graphics2D).setRenderingHints(rh)
 
         pad.color = Color(0xf0, 0xf0, 0xf0)
-        pad.fillRect(0, 0, 10 * style.squareSize, style.squareSize)
+        pad.fillRect(0, 0, preferredWidth(), style.squareSize)
 
         for (col in (3..6)) {
             val squareNumber = squareNumber(-1, col)
@@ -265,6 +267,12 @@ class Board : JPanel() {
                 }
             }
         }
+
+        pad.color = if (upsideDown) style.colorWhitePiece else style.colorBlackPiece
+        pad.fillRect(0, style.squareSize, preferredWidth(), style.squareSize / 12)
+
+        pad.color = if (upsideDown) style.colorBlackPiece else style.colorWhitePiece
+        pad.fillRect(0, 131 * style.squareSize / 12, preferredWidth(), 11 * style.squareSize)
     }
 
     private fun paintPiece(pad: Graphics, squareNumber: Int, x: Int, y: Int, hit: Boolean) {

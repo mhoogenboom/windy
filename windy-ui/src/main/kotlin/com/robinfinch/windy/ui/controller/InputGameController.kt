@@ -25,7 +25,7 @@ class InputGameController(private val view: View, private val texts: ResourceBun
     }
 
     private fun start() {
-        view.enableMenu(false)
+        view.enableMainMenu(false)
 
         view.enterGameDetails("", this::onGameDetailsEntered)
     }
@@ -51,7 +51,7 @@ class InputGameController(private val view: View, private val texts: ResourceBun
             whiteHasTheBoard = true
             play()
         } else {
-            view.enableMenu(true)
+            view.enableMainMenu(true)
         }
     }
 
@@ -102,7 +102,7 @@ class InputGameController(private val view: View, private val texts: ResourceBun
                     view.setGames(emptyList())
                     view.setBoard(Position())
                     view.setHistory("")
-                    view.enableMenu(true)
+                    view.enableMainMenu(true)
                 }
     }
 }

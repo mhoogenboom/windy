@@ -18,11 +18,11 @@ class ImportGamesController(private val view: View, private val texts: ResourceB
     }
 
     fun start() {
-        view.enableMenu(false)
+        view.enableMainMenu(false)
 
         val file = view.showOpenDialog()
         if (file == null) {
-            view.enableMenu(true)
+            view.enableMainMenu(true)
         } else {
             GameReader().read(file)
                     .subscribeOn(Schedulers.io())
