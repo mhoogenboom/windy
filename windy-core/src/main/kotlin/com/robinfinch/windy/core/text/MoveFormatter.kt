@@ -64,7 +64,7 @@ fun List<Move>.formatTo(out: BufferedWriter,
                     1
 
         if (html && (ply == emphasize)) {
-            out.write("<b>")
+            out.write("<a name=\"current\"/><b>")
         }
         out.write(if (duplicates == 1) shortForm else move.formatWithSteps())
         if (html && (ply == emphasize)) {

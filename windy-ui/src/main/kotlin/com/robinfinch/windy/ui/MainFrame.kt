@@ -196,6 +196,7 @@ class MainFrame(private val texts: ResourceBundle) : View {
 
     override fun setHistory(moves: String) {
         history.text = moves
+        history.scrollToReference("current")
     }
 
     override fun enableNextMove(onNextMoveRequired: (() -> Unit)?) {

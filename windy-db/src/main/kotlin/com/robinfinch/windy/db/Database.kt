@@ -60,7 +60,7 @@ class Database(private val dataDir: File) : Storage {
 
                 val games = mutableListOf<Game>()
 
-                val gamesPlayed = playerIndex.find(query.player)
+                val gamesPlayed = playerIndex.findFuzzy(query.player)
                 if (query.withWhite) {
                     games.addAll(gamesPlayed.withWhite.map(this::load))
                 }
