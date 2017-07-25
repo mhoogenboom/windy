@@ -2,4 +2,4 @@ rootProject.name = 'windy'
 include 'windy-core'
 include 'windy-db'
 include 'windy-ui'
-
+include 'windy-server'
