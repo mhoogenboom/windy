@@ -1,47 +1,88 @@
 package com.robinfinch.windy.ui.controller
 
-import com.robinfinch.windy.core.game.Action
-import com.robinfinch.windy.core.game.Arbiter
-import com.robinfinch.windy.core.game.Game
-import com.robinfinch.windy.core.position.Position
-import com.robinfinch.windy.core.text.format
+import com.robinfinch.windy.api.WindyApi
+import com.robinfinch.windy.core.game.Player
 import com.robinfinch.windy.db.Database
 import com.robinfinch.windy.ui.GameDetails
 import com.robinfinch.windy.ui.edt
-import com.robinfinch.windy.ui.getString
 import io.reactivex.schedulers.Schedulers
 import java.time.LocalDate
 import java.util.*
+import javax.swing.JMenu
 import javax.swing.JMenuItem
 
-class LocalPlayController(private val view: View, private val texts: ResourceBundle, private val db: Database) {
+class RemotePlayController(private val view: View, private val texts: ResourceBundle, private val api: WindyApi, private val db: Database) {
 
-    private val arbiter: Arbiter = Arbiter()
+    fun attachToMenu(): JMenu {
 
-    private var whiteHasTheBoard: Boolean = true
+        val playWhite = JMenuItem(texts.getString("remote_play.play_white"))
+        playWhite.addActionListener { connectWithWhite() }
 
-    fun attachToMenu(): JMenuItem {
-        val menuItem = JMenuItem(texts.getString("local_play.menu"))
-        menuItem.addActionListener { start() }
-        return menuItem
+        val playBlack = JMenuItem(texts.getString("remote_play.play_black"))
+        playBlack.addActionListener { connectWithBlack() }
+
+        val menu = JMenu(texts.getString("remote_play.menu"))
+        menu.add(playWhite)
+        menu.add(playBlack)
+        return menu
     }
 
-    private fun start() {
+    private fun connectWithWhite() {
         view.enableMainMenu(false)
 
-        view.enterGameDetails(this::onGameDetailsEntered, date = LocalDate.now().toString())
+        view.enterGameDetails(this::onWhiteDetailsEntered, black = "...", date = LocalDate.now().toString())
     }
 
-    private fun onGameDetailsEntered(optDetails: Optional<GameDetails>) {
+    private fun onWhiteDetailsEntered(optDetails: Optional<GameDetails>) {
+
+        if (optDetails.isPresent()) {
+            with (optDetails.get()) {
+                val player = Player()
+                player.name = this.white
+
+                api.connectWhiteToGame(this.event, player)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(edt())
+                        .subscribe({ x -> }, { e -> e.printStackTrace() })
+            }
+        } else {
+            view.enableMainMenu(true)
+        }
+    }
+
+    private fun connectWithBlack() {
+        view.enableMainMenu(false)
+
+        view.enterGameDetails(this::onBlackDetailsEntered, white = "...", date = LocalDate.now().toString())
+    }
+
+    private fun onBlackDetailsEntered(optDetails: Optional<GameDetails>) {
 
         if (optDetails.isPresent) {
             with(optDetails.get()) {
-                arbiter.setupGame()
-                arbiter.white = this.white
-                arbiter.black = this.black
-                arbiter.event = this.event
-                arbiter.date = this.date
+                val player = Player()
+                player.name = this.black
+
+                api.connectBlackToGame(this.event, player)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(edt())
+                        .subscribe({ x -> }, { e -> e.printStackTrace() })
             }
+        } else {
+            view.enableMainMenu(true)
+        }
+    }
+
+/*
+        if (optDetails.isPresent) {
+            val details = optDetails.get()
+
+            arbiter.setupGame()
+            arbiter.white = details.white
+            arbiter.black = details.black
+            arbiter.event = details.event
+            arbiter.date = details.date
+
             view.setGames(listOf(arbiter.currentGame))
             view.setBoard(arbiter.currentPosition)
 
@@ -123,5 +164,7 @@ class LocalPlayController(private val view: View, private val texts: ResourceBun
                     view.setHistory("")
                     view.enableMainMenu(true)
                 }
-    }
+                */
+
+
 }

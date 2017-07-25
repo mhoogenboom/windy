@@ -42,7 +42,11 @@ interface View {
 
     fun enableResign(onActionEntered: ((Action) -> Boolean)?)
 
-    fun enterGameDetails(date: String, onGameDetailsEntered: (Optional<GameDetails>) -> Unit)
+    fun enterGameDetails(
+            onGameDetailsEntered: (Optional<GameDetails>) -> Unit,
+            white: String = "",
+            black: String = "",
+            date: String = "")
 
     fun enterSearchCriteria(onSearchCriteriaEntered: (Optional<Query>) -> Unit)
 

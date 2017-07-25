@@ -68,11 +68,11 @@ class Arbiter {
         get() = (state == State.DRAW_PROPOSED)
 
     fun accept(name: String, action: Action) =
-        when (name) {
-            game.white -> acceptWhite(action)
-            game.black -> acceptBlack(action)
-            else -> false
-        }
+            when (name) {
+                game.white -> acceptWhite(action)
+                game.black -> acceptBlack(action)
+                else -> false
+            }
 
     fun acceptWhite(action: Action): Boolean {
 

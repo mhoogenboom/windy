@@ -103,14 +103,16 @@ class GameDetailsDialog(parent: JFrame, texts: ResourceBundle)
         })
     }
 
-    fun initialiseDate(date: String) {
-        if (date.isBlank()) {
-            dateField.text = ""
-            dateField.isEnabled = true
-        } else {
-            dateField.text = date
-            dateField.isEnabled = false
-        }
+    fun initialise(white: String, black: String, date: String) {
+
+        whiteField.text = white
+        whiteField.isEnabled = white.isBlank()
+
+        blackField.text = black
+        blackField.isEnabled = black.isBlank()
+
+        dateField.text = date
+        dateField.isEnabled = date.isBlank()
     }
 
     fun show(onGameDetailsEntered: (Optional<GameDetails>) -> Unit) {

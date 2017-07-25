@@ -1,5 +1,6 @@
 package com.robinfinch.windy.ui.controller
 
+import com.robinfinch.windy.api.WindyApi
 import com.robinfinch.windy.db.Database
 import dagger.Module
 import dagger.Provides
@@ -18,6 +19,11 @@ class ControllersModule {
     @Singleton
     fun providesLocalPlayController(view: View, texts: ResourceBundle, db: Database)
             = LocalPlayController(view, texts, db)
+
+    @Provides
+    @Singleton
+    fun providesRemotePlayController(view: View, texts: ResourceBundle, api: WindyApi, db: Database)
+            = RemotePlayController(view, texts, api, db)
 
     @Provides
     @Singleton

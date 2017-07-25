@@ -33,10 +33,10 @@ fun List<Move>.format(plyPerLine: Int = 2,
 }
 
 fun List<Move>.formatTo(out: BufferedWriter,
-                      plyPerLine: Int = 2,
-                      writeDuplicatesInLongForm: Boolean = false,
-                      html: Boolean = false,
-                      emphasize: Int = -1) {
+                        plyPerLine: Int = 2,
+                        writeDuplicatesInLongForm: Boolean = false,
+                        html: Boolean = false,
+                        emphasize: Int = -1) {
 
     val position = Position()
     position.start()

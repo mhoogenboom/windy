@@ -20,6 +20,9 @@ class WindyApp {
     lateinit var localPlayController: LocalPlayController
 
     @Inject
+    lateinit var remotePlayController: RemotePlayController
+
+    @Inject
     lateinit var inputGameController: InputGameController
 
     @Inject
@@ -41,6 +44,7 @@ class WindyApp {
     fun start() {
         frame.show(
                 localPlayController.attachToMenu(),
+                remotePlayController.attachToMenu(),
                 inputGameController.attachToMenu(),
                 importGamesController.attachToMenu(),
                 replayGamesController.attachToMenu(),

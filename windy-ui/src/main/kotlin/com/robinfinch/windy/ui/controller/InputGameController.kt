@@ -27,20 +27,19 @@ class InputGameController(private val view: View, private val texts: ResourceBun
     private fun start() {
         view.enableMainMenu(false)
 
-        view.enterGameDetails("", this::onGameDetailsEntered)
+        view.enterGameDetails(this::onGameDetailsEntered)
     }
 
     private fun onGameDetailsEntered(optDetails: Optional<GameDetails>) {
 
         if (optDetails.isPresent) {
-            val details = optDetails.get()
-
-            arbiter.setupGame()
-            arbiter.white = details.white
-            arbiter.black = details.black
-            arbiter.event = details.event
-            arbiter.date = details.date
-
+            with(optDetails.get()) {
+                arbiter.setupGame()
+                arbiter.white = this.white
+                arbiter.black = this.black
+                arbiter.event = this.event
+                arbiter.date = this.date
+            }
             view.setGames(listOf(arbiter.currentGame))
             view.setBoard(arbiter.currentPosition)
 
