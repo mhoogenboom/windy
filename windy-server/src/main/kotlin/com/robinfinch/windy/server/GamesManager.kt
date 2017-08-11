@@ -2,6 +2,7 @@ package com.robinfinch.windy.server
 
 import com.robinfinch.windy.core.game.Action
 import com.robinfinch.windy.core.game.Arbiter
+import com.robinfinch.windy.core.game.RemoteGameStatus
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
@@ -29,6 +30,17 @@ class GamesManager {
         } else {
             throw InvalidGameStateException("Black already connected to game ${gameId}")
         }
+    }
+
+    fun getStatus(gameId: String) : RemoteGameStatus {
+
+        val arbiter = arbiters.getOrElse(gameId, { throw GameNotFoundException(gameId) })
+
+        val status = RemoteGameStatus()
+        status.white = arbiter.white
+        status.black = arbiter.black
+        status.status = ""
+        return status
     }
 
     private fun newArbiter(): Arbiter {

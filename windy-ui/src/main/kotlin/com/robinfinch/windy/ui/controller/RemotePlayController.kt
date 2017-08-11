@@ -1,17 +1,25 @@
 package com.robinfinch.windy.ui.controller
 
+import com.google.gson.Gson
 import com.robinfinch.windy.api.WindyApi
+import com.robinfinch.windy.api.ifCodeElse
+import com.robinfinch.windy.api.ifNoContentElse
+import com.robinfinch.windy.core.game.Arbiter
 import com.robinfinch.windy.core.game.Player
+import com.robinfinch.windy.core.game.RemoteGameStatus
 import com.robinfinch.windy.db.Database
 import com.robinfinch.windy.ui.GameDetails
 import com.robinfinch.windy.ui.edt
 import io.reactivex.schedulers.Schedulers
+import java.net.HttpURLConnection
 import java.time.LocalDate
 import java.util.*
 import javax.swing.JMenu
 import javax.swing.JMenuItem
 
 class RemotePlayController(private val view: View, private val texts: ResourceBundle, private val api: WindyApi, private val db: Database) {
+
+    private val arbiter = Arbiter()
 
     fun attachToMenu(): JMenu {
 
@@ -36,15 +44,20 @@ class RemotePlayController(private val view: View, private val texts: ResourceBu
     private fun onWhiteDetailsEntered(optDetails: Optional<GameDetails>) {
 
         if (optDetails.isPresent()) {
-            with (optDetails.get()) {
-                val player = Player()
-                player.name = this.white
+            setUpArbiter(optDetails.get())
 
-                api.connectWhiteToGame(this.event, player)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(edt())
-                        .subscribe({ x -> }, { e -> e.printStackTrace() })
-            }
+            val player = Player()
+            player.name = arbiter.white
+
+            api.connectWhiteToGame(arbiter.event, player)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(edt())
+                    .subscribe(
+                            ifNoContentElse(
+                                    this::checkStatus,
+                                    this::onConnectionError),
+                            {e -> onConnectionError(e.message) }
+                    )
         } else {
             view.enableMainMenu(true)
         }
@@ -58,20 +71,78 @@ class RemotePlayController(private val view: View, private val texts: ResourceBu
 
     private fun onBlackDetailsEntered(optDetails: Optional<GameDetails>) {
 
-        if (optDetails.isPresent) {
-            with(optDetails.get()) {
-                val player = Player()
-                player.name = this.black
+        if (optDetails.isPresent()) {
+            setUpArbiter(optDetails.get())
 
-                api.connectBlackToGame(this.event, player)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(edt())
-                        .subscribe({ x -> }, { e -> e.printStackTrace() })
-            }
+            val player = Player()
+            player.name = arbiter.black
+
+            api.connectBlackToGame(arbiter.event, player)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(edt())
+                    .subscribe(
+                            ifNoContentElse(
+                                    this::checkStatus,
+                                    this::onConnectionError),
+                            {e -> onConnectionError(e.message) }
+                    )
         } else {
             view.enableMainMenu(true)
         }
     }
+
+    private fun setUpArbiter(details: GameDetails) {
+
+        arbiter.setupGame()
+        arbiter.white = details.white
+        arbiter.black = details.black
+        arbiter.event = details.event
+        arbiter.date = details.date
+
+        view.setGames(listOf(arbiter.currentGame))
+        view.setBoard(arbiter.currentPosition)
+    }
+
+    private fun checkStatus() {
+
+        Thread.sleep(600);
+
+        api.getStatus(arbiter.event)
+                .subscribeOn(Schedulers.io())
+                .observeOn(edt())
+                .subscribe(
+                        ifCodeElse<RemoteGameStatus>(HttpURLConnection.HTTP_OK,
+                                this::onStatusChecked,
+                                this::onConnectionError),
+                        { e -> onConnectionError(e.message) }
+                )
+    }
+
+    private fun onStatusChecked(response: RemoteGameStatus) {
+
+        if (response.white.isNotBlank() && response.black.isNotBlank()) {
+            arbiter.white = response.white
+            arbiter.black = response.black
+            view.setGames(listOf(arbiter.currentGame))
+
+            view.enableMainMenu(true) // todo
+        } else {
+            checkStatus()
+        }
+    }
+
+    private fun onConnectionError(message: String?) {
+
+        if ((message == null) || message.isBlank()) {
+            view.showMessage(texts.getString("app.general_error"))
+        } else {
+            view.showMessage(message)
+        }
+
+        view.setGames(emptyList())
+        view.enableMainMenu(true)
+    }
+
 
 /*
         if (optDetails.isPresent) {
