@@ -1,15 +1,17 @@
 package com.robinfinch.windy.ui.controller
 
 import com.google.gson.Gson
+import com.robinfinch.windy.api.StatusChecker
 import com.robinfinch.windy.api.WindyApi
 import com.robinfinch.windy.api.ifCodeElse
 import com.robinfinch.windy.api.ifNoContentElse
-import com.robinfinch.windy.core.game.Arbiter
-import com.robinfinch.windy.core.game.Player
-import com.robinfinch.windy.core.game.RemoteGameStatus
+import com.robinfinch.windy.core.game.*
+import com.robinfinch.windy.core.position.Position
+import com.robinfinch.windy.core.text.format
 import com.robinfinch.windy.db.Database
 import com.robinfinch.windy.ui.GameDetails
 import com.robinfinch.windy.ui.edt
+import com.robinfinch.windy.ui.getString
 import io.reactivex.schedulers.Schedulers
 import java.net.HttpURLConnection
 import java.time.LocalDate
@@ -19,15 +21,25 @@ import javax.swing.JMenuItem
 
 class RemotePlayController(private val view: View, private val texts: ResourceBundle, private val api: WindyApi, private val db: Database) {
 
+    private val statusChecker = StatusChecker(api)
+
     private val arbiter = Arbiter()
+
+    private var playWithWhite = true
 
     fun attachToMenu(): JMenu {
 
         val playWhite = JMenuItem(texts.getString("remote_play.play_white"))
-        playWhite.addActionListener { connectWithWhite() }
+        playWhite.addActionListener {
+            playWithWhite = true
+            enterDetails()
+        }
 
         val playBlack = JMenuItem(texts.getString("remote_play.play_black"))
-        playBlack.addActionListener { connectWithBlack() }
+        playBlack.addActionListener {
+            playWithWhite = false
+            enterDetails()
+        }
 
         val menu = JMenu(texts.getString("remote_play.menu"))
         menu.add(playWhite)
@@ -35,54 +47,37 @@ class RemotePlayController(private val view: View, private val texts: ResourceBu
         return menu
     }
 
-    private fun connectWithWhite() {
+    private fun enterDetails() {
         view.enableMainMenu(false)
 
-        view.enterGameDetails(this::onWhiteDetailsEntered, black = "...", date = LocalDate.now().toString())
-    }
+        view.setBoardUpsideDown(!playWithWhite)
 
-    private fun onWhiteDetailsEntered(optDetails: Optional<GameDetails>) {
-
-        if (optDetails.isPresent()) {
-            setUpArbiter(optDetails.get())
-
-            val player = Player()
-            player.name = arbiter.white
-
-            api.connectWhiteToGame(arbiter.event, player)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(edt())
-                    .subscribe(
-                            ifNoContentElse(
-                                    this::checkStatus,
-                                    this::onConnectionError),
-                            {e -> onConnectionError(e.message) }
-                    )
+        if (playWithWhite) {
+            view.enterGameDetails(this::onDetailsEntered, black = "...", date = LocalDate.now().toString())
         } else {
-            view.enableMainMenu(true)
+            view.enterGameDetails(this::onDetailsEntered, white = "...", date = LocalDate.now().toString())
         }
     }
 
-    private fun connectWithBlack() {
-        view.enableMainMenu(false)
-
-        view.enterGameDetails(this::onBlackDetailsEntered, white = "...", date = LocalDate.now().toString())
-    }
-
-    private fun onBlackDetailsEntered(optDetails: Optional<GameDetails>) {
+    private fun onDetailsEntered(optDetails: Optional<GameDetails>) {
 
         if (optDetails.isPresent()) {
             setUpArbiter(optDetails.get())
 
             val player = Player()
-            player.name = arbiter.black
 
-            api.connectBlackToGame(arbiter.event, player)
+            if (playWithWhite) {
+                player.name = arbiter.white
+                api.connectWhiteToGame(arbiter.event, player)
+            } else {
+                player.name = arbiter.black
+                api.connectBlackToGame(arbiter.event, player)
+            }
                     .subscribeOn(Schedulers.io())
                     .observeOn(edt())
                     .subscribe(
                             ifNoContentElse(
-                                    this::checkStatus,
+                                    this::onConnectedToGame,
                                     this::onConnectionError),
                             {e -> onConnectionError(e.message) }
                     )
@@ -103,19 +98,8 @@ class RemotePlayController(private val view: View, private val texts: ResourceBu
         view.setBoard(arbiter.currentPosition)
     }
 
-    private fun checkStatus() {
-
-        Thread.sleep(600);
-
-        api.getStatus(arbiter.event)
-                .subscribeOn(Schedulers.io())
-                .observeOn(edt())
-                .subscribe(
-                        ifCodeElse<RemoteGameStatus>(HttpURLConnection.HTTP_OK,
-                                this::onStatusChecked,
-                                this::onConnectionError),
-                        { e -> onConnectionError(e.message) }
-                )
+    private fun onConnectedToGame() {
+        statusChecker.checkStatus(arbiter.event, this::onStatusChecked, this::onConnectionError)
     }
 
     private fun onStatusChecked(response: RemoteGameStatus) {
@@ -125,9 +109,13 @@ class RemotePlayController(private val view: View, private val texts: ResourceBu
             arbiter.black = response.black
             view.setGames(listOf(arbiter.currentGame))
 
-            view.enableMainMenu(true) // todo
+            if (playWithWhite) {
+                enableMoving()
+            } else {
+                // waitForOpponent()
+            }
         } else {
-            checkStatus()
+            onConnectedToGame()
         }
     }
 
@@ -143,52 +131,32 @@ class RemotePlayController(private val view: View, private val texts: ResourceBu
         view.enableMainMenu(true)
     }
 
-
-/*
-        if (optDetails.isPresent) {
-            val details = optDetails.get()
-
-            arbiter.setupGame()
-            arbiter.white = details.white
-            arbiter.black = details.black
-            arbiter.event = details.event
-            arbiter.date = details.date
-
-            view.setGames(listOf(arbiter.currentGame))
-            view.setBoard(arbiter.currentPosition)
-
-            view.enableMovesOnBoard(this::onActionEntered)
-            view.enableResign(this::onActionEntered)
-
-            whiteHasTheBoard = true
-            play()
-        } else {
-            view.enableMainMenu(true)
-        }
-    }
-
     private fun onActionEntered(action: Action): Boolean {
 
-        if (whiteHasTheBoard) {
-            if (arbiter.acceptWhite(action)) {
-                whiteHasTheBoard = false
-                play()
-                return true
-            } else {
-                return false
-            }
+        val accepted = if (playWithWhite) arbiter.acceptWhite(action) else arbiter.acceptBlack(action)
+
+        if (accepted) {
+            sendAction(action)
+            play(true)
+            return true
         } else {
-            if (arbiter.acceptBlack(action)) {
-                whiteHasTheBoard = true
-                play()
-                return true
-            } else {
-                return false
-            }
+            return false
         }
     }
 
-    private fun play() {
+    private fun onActionReceived(action: Action): Boolean {
+
+        val accepted = if (playWithWhite) arbiter.acceptBlack(action) else arbiter.acceptWhite(action)
+
+        if (accepted) {
+            play(false)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    private fun play(forOpponent: Boolean) {
 
         val game = arbiter.currentGame
 
@@ -196,12 +164,13 @@ class RemotePlayController(private val view: View, private val texts: ResourceBu
 
             Game.Result.UNKNOWN -> {
                 view.setBoard(arbiter.currentPosition)
-                view.setBoardUpsideDown(!whiteHasTheBoard)
                 view.setHistory(game.moves().format(html = true))
-                view.enableAcceptDraw(if (arbiter.drawProposed) this::onActionEntered else null)
 
-                val player = if (whiteHasTheBoard) arbiter.white else arbiter.black
-                view.showMessage(texts.getString("local_play.has_the_board", player))
+                if (forOpponent) {
+                    disableMoving()
+                } else {
+                    enableMoving()
+                }
             }
 
             Game.Result.WHITE_WIN -> {
@@ -220,9 +189,7 @@ class RemotePlayController(private val view: View, private val texts: ResourceBu
 
     private fun finish(message: String) {
 
-        view.disableBoard()
-        view.enableAcceptDraw(null)
-        view.enableResign(null)
+        disableMoving()
 
         view.showMessage(message)
 
@@ -235,7 +202,17 @@ class RemotePlayController(private val view: View, private val texts: ResourceBu
                     view.setHistory("")
                     view.enableMainMenu(true)
                 }
-                */
+    }
 
+    private fun enableMoving() {
+        view.enableMovesOnBoard(this::onActionEntered)
+        view.enableAcceptDraw(if (arbiter.drawProposed) this::onActionEntered else null)
+        view.enableResign(this::onActionEntered)
+    }
 
+    private fun disableMoving() {
+        view.disableBoard()
+        view.enableAcceptDraw(null)
+        view.enableResign(null)
+    }
 }
