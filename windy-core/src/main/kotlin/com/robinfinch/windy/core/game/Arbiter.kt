@@ -1,6 +1,7 @@
 package com.robinfinch.windy.core.game
 
 import com.robinfinch.windy.core.position.Position
+import com.robinfinch.windy.core.storage.Storage
 
 class Arbiter {
 
@@ -57,6 +58,8 @@ class Arbiter {
                 game.date = date
             }
         }
+
+    val whiteToPlay = position.white[0]
 
     val currentPosition
         get() = position.copy()

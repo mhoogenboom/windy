@@ -46,4 +46,9 @@ class ControllersModule {
     fun providesInputExerciseController(view: View, texts: ResourceBundle, db: Database)
             = InputExerciseController(view, texts, db)
 
+    @Provides
+    @Singleton
+    fun providesSolvesExerciseController(view: View, texts: ResourceBundle, db: Database)
+            = SolvesExercisesController(view, texts, db)
+
 }

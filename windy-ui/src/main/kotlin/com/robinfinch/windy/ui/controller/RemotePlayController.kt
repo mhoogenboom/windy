@@ -144,6 +144,10 @@ class RemotePlayController(private val view: View, private val texts: ResourceBu
         }
     }
 
+    private fun sendAction(action: Action) {
+        // todo
+    }
+
     private fun onActionReceived(action: Action): Boolean {
 
         val accepted = if (playWithWhite) arbiter.acceptBlack(action) else arbiter.acceptWhite(action)

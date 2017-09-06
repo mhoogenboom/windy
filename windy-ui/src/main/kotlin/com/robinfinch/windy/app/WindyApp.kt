@@ -35,6 +35,9 @@ class WindyApp {
     lateinit var inputExerciseController: InputExerciseController
 
     @Inject
+    lateinit var solveExercisesController: SolvesExercisesController
+
+    @Inject
     lateinit var frame: View
 
     init {
@@ -48,7 +51,8 @@ class WindyApp {
                 inputGameController.attachToMenu(),
                 importGamesController.attachToMenu(),
                 replayGamesController.attachToMenu(),
-                inputExerciseController.attachToMenu()
+                inputExerciseController.attachToMenu(),
+                solveExercisesController.attachToMenu()
         )
     }
 }

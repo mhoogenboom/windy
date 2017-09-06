@@ -1,7 +1,7 @@
 package com.robinfinch.windy.ui
 
 import com.robinfinch.windy.core.board.Board
-import com.robinfinch.windy.core.game.Query
+import com.robinfinch.windy.core.storage.Query
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets

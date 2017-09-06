@@ -2,10 +2,11 @@ package com.robinfinch.windy.db
 
 import com.robinfinch.windy.core.exercise.Exercise
 import com.robinfinch.windy.core.game.Game
-import com.robinfinch.windy.core.game.Query
-import com.robinfinch.windy.core.game.Storage
+import com.robinfinch.windy.core.storage.Query
+import com.robinfinch.windy.core.storage.Storage
 import com.robinfinch.windy.core.position.Position
-import io.reactivex.Observable
+import com.robinfinch.windy.core.storage.Storable
+import io.reactivex.Single
 import java.io.*
 
 class Database(private val dataDir: File) : Storage {
@@ -33,7 +34,7 @@ class Database(private val dataDir: File) : Storage {
 
     override fun storeGames(games: List<Game>) =
 
-            Observable.fromCallable {
+            Single.fromCallable {
                 for (game in games) {
                     store(game)
 
@@ -54,9 +55,9 @@ class Database(private val dataDir: File) : Storage {
                 }
             }
 
-    override fun findGamesByPlayer(query: Query): Observable<List<Game>> =
+    override fun findGamesByPlayer(query: Query): Single<List<Game>> =
 
-            Observable.fromCallable {
+            Single.fromCallable {
 
                 val games = mutableListOf<Game>()
 
@@ -71,16 +72,16 @@ class Database(private val dataDir: File) : Storage {
                 games
             }
 
-    override fun findGamesByPosition(position: Position): Observable<List<Game>> =
+    override fun findGamesByPosition(position: Position): Single<List<Game>> =
 
-            Observable.fromCallable {
+            Single.fromCallable {
                 val games: List<Game> = positionIndex.find(position).map(this::load)
                 games
             }
 
     override fun storeExercise(exercise: Exercise) =
 
-            Observable.fromCallable {
+            Single.fromCallable {
                 store(exercise)
 
                 exerciseIndex.insert(id)
@@ -90,23 +91,37 @@ class Database(private val dataDir: File) : Storage {
                 positionIndex.flush()
             }
 
-    override fun findExercisesByScore(count: Int): Observable<List<Exercise>> =
+    override fun countPass(exercise: Exercise) =
 
-            Observable.fromCallable {
+        Single.fromCallable {
+            exerciseIndex.countPass(exercise.id)
+        }
+
+    override fun countFail(exercise: Exercise) =
+
+            Single.fromCallable {
+                exerciseIndex.countFail(exercise.id)
+            }
+
+    override fun findExercisesByScore(count: Int): Single<List<Exercise>> =
+
+            Single.fromCallable {
                 val exercises: List<Exercise> = exerciseIndex.find(count).map(this::load)
                 exercises
             }
 
-    override fun findExercisesByPosition(position: Position): Observable<List<Exercise>> =
+    override fun findExercisesByPosition(position: Position): Single<List<Exercise>> =
 
-            Observable.fromCallable {
+            Single.fromCallable {
                 val exercises: List<Exercise> = positionIndex.find(position).map(this::load)
                 exercises
             }
 
-    private fun <T> store(item: T) {
+    private fun store(item: Storable) {
 
         id++
+
+        item.id = id
 
         val file = fileFor(id)
 
@@ -119,7 +134,7 @@ class Database(private val dataDir: File) : Storage {
         }
     }
 
-    private fun <T> load(id: Long): T {
+    private fun <T : Storable> load(id: Long): T {
 
         val file = fileFor(id)
 

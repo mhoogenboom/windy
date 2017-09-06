@@ -1,14 +1,15 @@
 package com.robinfinch.windy.core.game
 
 import com.robinfinch.windy.core.position.Move
-import java.io.Serializable
+import com.robinfinch.windy.core.storage.Storable
 
-class Game() : Serializable {
+class Game() : Storable {
 
     enum class Result {
         UNKNOWN, WHITE_WIN, DRAW, BLACK_WIN
     }
 
+    override var id = 0L
     var white: String = ""
     var black: String = ""
     var event: String = ""

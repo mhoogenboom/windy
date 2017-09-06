@@ -3,6 +3,7 @@ package com.robinfinch.windy.ui
 import com.robinfinch.windy.core.board.Board
 import com.robinfinch.windy.core.game.*
 import com.robinfinch.windy.core.position.Position
+import com.robinfinch.windy.core.storage.Query
 import com.robinfinch.windy.ui.controller.View
 import java.awt.Dimension
 import java.awt.GridBagConstraints

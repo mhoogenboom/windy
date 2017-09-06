@@ -1,7 +1,7 @@
 package com.robinfinch.windy.ui.controller
 
 import com.robinfinch.windy.core.game.Game
-import com.robinfinch.windy.core.game.Query
+import com.robinfinch.windy.core.storage.Query
 import com.robinfinch.windy.core.position.Position
 import com.robinfinch.windy.core.text.format
 import com.robinfinch.windy.db.Database
